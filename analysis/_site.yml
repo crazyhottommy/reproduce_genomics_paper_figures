@@ -1,7 +1,7 @@
-name: "reproduce_genomics_paper_figures"
+name: reproduce_genomics_paper_figures
 output_dir: ../docs
 navbar:
-  title: "reproduce_genomics_paper_figures"
+  title: chatomics:Reproduce genomics paper figures
   left:
   - text: Home
     href: index.html
@@ -9,6 +9,10 @@ navbar:
     href: about.html
   - text: License
     href: license.html
+  right:
+  - icon: fab fa-github
+    text: Source code
+    href: https://github.com/crazyhottommy/reproduce_genomics_paper_figures
 output:
   workflowr::wflow_html:
     toc: yes
