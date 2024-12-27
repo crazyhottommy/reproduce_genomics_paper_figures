@@ -9,3 +9,7 @@ editor_options:
 ---
 
 Welcome to my research website.
+
+1. [Download fastq files](01_download_fastq_from_GEO.html).
+2. [Align fastq to genome](02_align_to_hg38.html)
+3. [Generate bigwig files and call peaks](03_generate_bigwig.html)

@@ -1,0 +1,141 @@
+---
+title: "Download Fastq"
+output: html_document
+date: "2024-12-26"
+---
+### install fastq-dl with conda
+
+we will use fastq-dl to download the fastq files from GEO.
+
+https://github.com/rpetit3/fastq-dl/tree/master
+
+```{bash eval=FALSE}
+conda create -n fastq_download -c conda-forge -c bioconda fastq-dl
+conda activate fastq_download 
+```
+
+**Tip**, `conda` is very slow. use `mamba` as a drop-in replacement for `conda`.
+
+**Real bioinformatics problem**
+
+I could not install `fastq-dl` on my mac because my mac has a M3 chip
+and sra-tools is not compatible with it.
+
+```{bash eval=FALSE}
+Platform: osx-arm64
+Collecting package metadata (repodata.json): done
+Solving environment: failed
+
+LibMambaUnsatisfiableError: Encountered problems while solving:
+  - nothing provides sra-tools needed by fastq-dl-1.0.0-0
+
+Could not solve for environment specs
+The following packages are incompatible
+└─ fastq-dl is not installable because there are no viable options
+   ├─ fastq-dl [1.0.0|1.0.1|1.0.2|1.0.3] would require
+   │  └─ sra-tools, which does not exist (perhaps a missing channel);
+   ├─ fastq-dl [1.0.4|1.0.5|1.0.6|1.1.0|1.1.1] would require
+   │  └─ sra-tools >=2.9 , which does not exist (perhaps a missing channel);
+   └─ fastq-dl [1.2.0|2.0.0|...|3.0.0] would require
+      └─ sra-tools >=3.0.1 , which does not exist (perhaps a missing channel).
+
+
+EnvironmentNameNotFound: Could not find conda environment: fastq_download
+You can list all discoverable environments with `conda info --envs`.
+
+```
+
+What can I do?
+
+1. use a linux machine (e.g., Ubuntub operating system)
+2. 
+
+### download fastq 
+
+go to GSE page https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE66083
+click one of the SRX sample https://www.ncbi.nlm.nih.gov/sra?term=SRX883576
+
+![](imgs/srx.png)
+
+
+The relationship of Experiment to Run is a 1-to-many relationship, or there can be many Run accessions associated with a single Experiment Accession (e.g. re-sequencing the same sample). Although in most cases, it is a 1-to-1 relationship, you can use --group-by-experiment to merge multiple runs associated with an Experiment accession into a single FASTQ file.
+
+and we see many SRR number for the same SRX sample.
+
+```{bash eval=FALSE}
+fastq-dl --accession SRX883576  --group-by-experiment
+
+```
+
+
+Instead we can download the fastq files directly from ENA.
+
+https://www.ebi.ac.uk/ena/browser/view/PRJNA275844
+
+YAP_rep1 SRX883576 SRR1810900
+TAZ_rep1 SRX883578 SRR1810907
+TEAD4_rep1 SRX883582  SRR1810918
+IgG SRX883580 SRR1810912
+
+```{bash eval=FALSE}
+cd data/fastq
+# if you do not have wget 
+# conda install wget 
+wget -nc ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR181/007/SRR1810907/SRR1810907.fastq.gz
+wget -nc ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR181/008/SRR1810918/SRR1810918.fastq.gz
+wget -nc ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR181/000/SRR1810900/SRR1810900.fastq.gz
+wget -nc ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR181/002/SRR1810912/SRR1810912.fastq.gz
+
+```
+
+Now let's change the name of the fastq files so we know what are they.
+Note this is not the best practice, but for our tutorial, let's do it.
+
+```{bash eval=FALSE}
+mv SRR1810907.fastq.gz TAZ.fatq.gz
+mv SRR1810900.fastq.gz YAP.fastq.gz
+mv SRR1810918.fastq.gz TEAD4.fastq.gz
+mv SRR1810912.fastq.gz IgG.fastq.gz
+```
+
+fastq files are just text files with 4 lines for a single record.
+
+```{bash eval=FALSE}
+zless -S YAP.fastq.gz
+
+@SRR1810900.1 HWI-ST1210:136:C1RBDACXX:5:1101:1446:2162/1
+AGAGTTTTTAACATGAAGAGATGTTGACTTTTATCAAAGGCTTTTTCTGC
++
+BCBFDFFFHHHHHJJJJJIJJJJJJJJJJJJJIJJJJIJJIJJJJJJJJI
+@SRR1810900.2 HWI-ST1210:136:C1RBDACXX:5:1101:1347:2184/1
+AGACTCAACACATTACCAGCTATGGTGGCTACAGGACAAAAATCCTTCTG
++
+CCCFFFFFHHHHHJJJJJIJJJJJJHHIIJIIDGIGIJJJJJJHJJJJGG
+@SRR1810900.3 HWI-ST1210:136:C1RBDACXX:5:1101:1690:2145/1
+CCCCCGAAAGGGTTTCAGGAAACCCCAGGGACCCTCCGATTACACCTGGN
++
+CCCFFFFFHHHHCGHIIJJIJJIJJJJJJJJCHJJJJIJJJJFIJJIIFF
+```
+
+
+**Challenge**:
+if we want to download all of them programmatically, how to do it?
+
+### fastqc look at the quality of the reads
+
+```{bash eval=FALSE}
+conda create -n reproduce_figure fastqc -c bioconda
+conda activate reproduce_figure
+
+```
+
+```{bash eval=FALSE}
+for fq in *fastq.gz
+do
+  fastqc $fq
+done
+```
+
+**Tip** use [`multiQC`](https://github.com/MultiQC/MultiQC)
+
+If there is low quality bases and adaptor contamination, use [`fastp`](https://github.com/OpenGene/fastp) to trim them off.

@@ -1,0 +1,236 @@
+---
+title: "Alignment to the genome"
+output: html_document
+date: "2024-12-26"
+---
+
+The next step is to align the fastq files to the genome. We will use hg38 reference
+human genome for the alignment.
+
+Where to download the reference?
+
+watch xx
+
+use refgenine.
+
+It is single-end read with 50 base pairs.
+
+```{bash eval=FALSE}
+zless TAZ.fatq.gz | head -2 |tail -1
+ATAGGCTTTAAGCTGTCTTTGGTTTGAAGGTGGGATTTTACCGGGGACCC
+
+zless TAZ.fatq.gz | head -2 |tail -1 | wc -L
+      50
+```
+
+The ChIP-seq signal can happen to anywhere in the genome, so we need an aligner 
+to align the reads to the genome.
+
+For RNAseq data, `STAR` is a popular aligner.
+
+BWA, BWA-mem is very popular for DNA-seq (WGS, WES) alignment. 
+
+Let's use `bowtie2` https://bowtie-bio.sourceforge.net/bowtie2/index.shtml
+
+> Bowtie 2 is an ultrafast and memory-efficient tool for aligning sequencing reads to long reference sequences. It is particularly good at aligning reads of about 50 up to 100s or 1,000s of characters, and particularly good at aligning to relatively long (e.g. mammalian) genomes.
+
+### install bowtie2
+
+```{bash eval=FALSE}
+conda install bowtie2 -c bioconda
+Channels:
+ - bioconda
+ - defaults
+Platform: osx-arm64
+Collecting package metadata (repodata.json): done
+Solving environment: failed
+
+LibMambaUnsatisfiableError: Encountered problems while solving:
+  - nothing provides libcxx >=16 needed by bowtie2-2.5.4-hdcd892d_2
+
+Could not solve for environment specs
+The following packages are incompatible
+└─ bowtie2 is not installable because there are no viable options
+   ├─ bowtie2 2.5.4 would require
+   │  └─ libcxx >=16 , which does not exist (perhaps a missing channel);
+   └─ bowtie2 2.5.4 would require
+      └─ libcxx >=18 , which does not exist (perhaps a missing channel).
+```
+
+Ask ChatGPT, and it is lacking the libcxx. let's install it first.
+
+```{bash eval=FALSE}
+conda install libcxx -c conda-forge
+```
+
+
+```{bash eval=FALSE}
+conda install bowtie2 -c bioconda
+```
+
+Now it works, and after it finishes installing you can 
+
+```{bash eval=FALSE}
+bowtie2
+```
+
+
+### download index
+
+scroll down the page https://bowtie-bio.sourceforge.net/bowtie2/index.shtml
+and on the left you will see the index to download. 
+
+We will download the GRCH38 (aka, hg38 without decoy). click it, it will download
+a `GRCh38_noalt_as.zip` file of 3.5G. unzip it and place the folder to the `data/reference` folder.
+
+Which reference genome to use? Bonus, read this [post](https://lh3.github.io/2017/11/13/which-human-reference-genome-to-use) by HengLi. 
+
+```{bash eval=FALSE}
+# make sure you are in the data folder
+cd data/
+
+bowtie2 -x reference/GRCh38_noalt_as/GRCh38_noalt_as -U fastq/YAP.fastq.gz -S fastq/YAP1.sam --threads 8  --no-mixed --no-discordant -k 1
+
+```
+
+`-x reference/GRCh38_noalt_as/GRCh38_noalt_as`: The path to the Bowtie2 reference genome index (built with bowtie2-build reference.fa reference_index).
+
+-U input.fastq: Input FASTQ file for single-end reads.
+
+-S output.sam: Output alignment file in SAM format.
+
+--threads 8: Use 8 threads to speed up alignment.
+
+--no-mixed: Ensures that only properly paired reads are reported (not relevant for single-end data but good for ChIP-seq).
+
+--no-discordant: Prevents reporting discordant alignments (not relevant for single-end data but ensures consistent results for paired-end).
+
+-k 1: Reports only the best alignment for each read (important for ChIP-seq to avoid multi-mapping).
+
+
+Below is the output. And it is super-fast!! 
+for 24 million reads, it only took me 1.5 mins with 8 CPUs.
+
+```{bash eval=FALSE}
+
+24549590 reads; of these:
+  24549590 (100.00%) were unpaired; of these:
+    895629 (3.65%) aligned 0 times
+    23653961 (96.35%) aligned exactly 1 time
+    0 (0.00%) aligned >1 times
+96.35% overall alignment rate
+       93.73 real       733.08 user        21.44 sys
+```
+
+The output is the `sam` file which is a format to store the alignment. It is just a text
+file and you can use `less -S YAP1.sam` to see the content.
+
+
+After we made one sample work, we can loop over and do the same for other fastq files.
+
+```{bash eval=FALSE}
+rm YAP.sam
+
+for fq in fastq/*fastq.gz
+do
+  bowtie2 -x reference/GRCh38_noalt_as/GRCh38_noalt_as -U $fq -S ${fq/fastq.gz/sam} --threads 8  --no-mixed --no-discordant -k 1
+done
+```
+
+here we used bash string manipulation `${fq/fastq.gz/sam}` to replace the `fastq.gz` to `sam` as the output. 
+
+Bonus: read my blog post on it https://crazyhottommy.blogspot.com/2015/07/string-manipulation-in-bash.html
+
+Make sure you have all the sam files:
+
+```{bash eval=FALSE}
+ls fastq/*sam
+fastq/IgG.sam   fastq/TAZ.sam   fastq/TEAD4.sam fastq/YAP.sam
+```
+
+### convert sam to bam
+
+Most of the tools work with the binary form of the sam file which is a bam file.
+The size of the bam file is smaller
+`samtools` is the key toolkit to deal with it.
+
+```{bash eval=FALSE}
+conda install samtools -c bioconda
+
+for sam in fastq/*sam
+do
+  samtools view -bS $sam > ${sam/sam/bam}
+done
+```
+
+
+```{bash eval=FALSE}
+# check the size of the sam and bam files
+ls -shlt fastq/*am
+
+ 2590616 -rw-r--r--@ 1 tommytang  staff   1.2G Dec 26 16:02 fastq/YAP.bam
+ 3310856 -rw-r--r--@ 1 tommytang  staff   1.6G Dec 26 16:01 fastq/TEAD4.bam
+ 2885488 -rw-r--r--@ 1 tommytang  staff   1.4G Dec 26 15:59 fastq/TAZ.bam
+ 3277792 -rw-r--r--@ 1 tommytang  staff   1.5G Dec 26 15:58 fastq/IgG.bam
+10158320 -rw-r--r--@ 1 tommytang  staff   4.8G Dec 26 15:54 fastq/YAP.sam
+14483624 -rw-r--r--@ 1 tommytang  staff   6.9G Dec 26 15:52 fastq/TEAD4.sam
+11437112 -rw-r--r--@ 1 tommytang  staff   5.4G Dec 26 15:50 fastq/TAZ.sam
+12947640 -rw-r--r--@ 1 tommytang  staff   6.2G Dec 26 15:48 fastq/IgG.sam
+
+# remove the sam files to save space
+rm fastq/*sam
+```
+
+sort the reads in the bam file by coordinates.
+
+```{bash eval=FALSE}
+for bam in fastq/*bam
+do
+  samtools sort -@ 4 -o ${bam/bam/sorted.bam} $bam
+done
+
+ls fastq/*bam
+fastq/IgG.bam          fastq/TAZ.bam          fastq/TEAD4.bam        fastq/YAP.bam
+fastq/IgG.sorted.bam   fastq/TAZ.sorted.bam   fastq/TEAD4.sorted.bam fastq/YAP.sorted.bam
+
+# remove all the unsorted bam 
+ls fastq/*bam | grep -v sorted.bam | xargs rm
+```
+
+Always test the command for a single sample and then apply it to all samples after you confirm it works.
+
+Why Sort a BAM File?
+
+- Efficient Retrieval by Genomic Coordinates:
+
+Sorting arranges the reads in the BAM file by their genomic coordinates (e.g., by chromosome and position).
+This is crucial for downstream tools (e.g., variant calling, visualization) that rely on efficient access to reads aligned to specific regions.
+Compatibility with Analysis Tools:
+
+- Many tools require sorted BAM files as input because they process data regionally (e.g., calling peaks or calculating coverage).
+
+### index the bam file 
+
+```{bash eval=FALSE}
+
+for bam in fastq/*sorted.bam
+do 
+  samtools index $bam
+done
+
+```
+
+Why Index a BAM File?
+
+- Random Access to Reads:
+
+The BAM index (.bai or .csi file) allows tools to quickly locate and access reads aligned to specific genomic regions without scanning the entire file.
+This dramatically improves performance for tasks like visualization (e.g., in IGV) or focused analyses of particular loci.
+
+- Faster Processing:
+
+Many tools (e.g., samtools, deepTools, GATK) use the index to load only relevant portions of the BAM file, reducing memory and computation time.
+
+- Requirement for Visualization:
+
+Genome browsers like IGV or UCSC Genome Browser require indexed BAM files to display aligned reads efficiently.

@@ -1,0 +1,169 @@
+---
+title: "Generate bigwig files and peak calling"
+output: html_document
+date: "2024-12-26"
+---
+
+### generate bigwig files 
+
+Now that we have the sorted bam file, we can generate a genome wide signal view
+as a bigwig file.
+
+A BigWig file is a binary file format commonly used in bioinformatics to efficiently store and visualize continuous data over genomic coordinates, such as read coverage or signal intensity. It is derived from the Wiggle (WIG) format but optimized for faster access and reduced file size, making it suitable for large-scale genomic data.
+
+UCSC has a detailed page explaining what is it https://genome.ucsc.edu/goldenpath/help/bigWig.html
+
+Bonus: Bioinformatics is nortorious about different file formats. read https://genome.ucsc.edu/FAQ/FAQformat.html for various formats definitions
+
+For this purpose, we will use deeptools https://deeptools.readthedocs.io/en/develop/content/example_usage.html
+
+deeptools is very versatile and it has many [sub-commands](https://deeptools.readthedocs.io/en/develop/content/list_of_tools.html).
+
+We will use [bamCoverage](https://deeptools.readthedocs.io/en/develop/content/tools/bamCoverage.html) to generate bigwig files.
+
+
+```{bash eval=FALSE}
+# install it via conda if you do not have it yet
+conda install -c conda-forge -c bioconda deeptools
+# or 
+pip install deeptools
+
+```
+
+I really like the demonstration of how coverage files are computed by the deeptools [authors](https://docs.google.com/file/d/0B8DPnFM4SLr2UjdYNkQ0dElEMm8/edit?resourcekey=0-7YZ1j0PIefw22P18GFlUjg).
+
+
+![](imgs/bam2bigwig1.png)
+![](imgs/bam2bigwig2.png)
+
+![](imgs/bam2bigwig3.png)
+
+* RPKM:
+reads per kilobase per million reads
+The formula is: RPKM (per bin) = number of reads per bin /(number of mapped reads (in millions) * bin length (kp))
+
+* RPGC:
+reads per genomic content
+used to normalize reads to 1x depth of coverage
+sequencing depth is defined as: (total number of mapped reads * fragment length) / effective genome size
+
+
+```{bash eval=FALSE}
+cd data/fastq
+bamCoverage --bam YAP.sorted.bam --normalizeUsing RPKM --extendReads 200 -o YAP1.bw
+```
+
+Read [here](https://github.com/crazyhottommy/ChIP-seq-analysis/blob/master/part1.2_convert_bam2_bigwig.md) to understand why you need to extend the reads to 200 bp. We only sequenced 50bp
+of the DNA after antibody pull-down, but the real DNA is about 200 bp (the size of the DNA after sonication/fragmentation)
+
+We used default bin size 50 bp. 
+
+#### Generate bigwig files for all samples
+
+```{bash eval=FALSE}
+for bam in *sorted.bam
+do
+  bamCoverage --bam $bam --normalizeUsing RPKM --extendReads 200 -o ${bam/sorted.bam/bw}
+done
+```
+
+
+### peak calling
+
+[`MACS`](https://genomebiology.biomedcentral.com/articles/10.1186/gb-2008-9-9-r137) is the most popular peak caller for ChIPseq. It is maintained by Tao Liu. I had the pleasure working with him on some single-cell ATACseq stuff when I was in Shirley Liu's lab.
+
+MACS is now MACS3! https://macs3-project.github.io/MACS/docs/INSTALL.html
+
+```{bash eval=FALSE}
+pip install --upgrade macs3
+```
+
+The MACS3 callpeak subcommands have many paramters and you want to read 
+https://macs3-project.github.io/MACS/docs/callpeak.html
+
+```{bash eval=FALSE}
+macs3 callpeak -t YAP.sorted.bam -c IgG.sorted.bam -f BAM -n YAP -g hs --outdir YAP_peak
+```
+It takes a couple of minutes. output:
+
+```{bash eval=FALSE}
+ls YAP_peak/
+YAP1_model.r          YAP1_peaks.narrowPeak YAP1_peaks.xls        YAP1_summits.bed
+```
+
+Do it for all samples
+
+```{bash eval=FALSE}
+for bam in *sorted.bam
+do
+  macs3 callpeak -t $bam -c IgG.sorted.bam -f BAM -n ${bam%.sorted.bam} -g hs --outdir ${bam/.sorted.bam/_peak}
+done
+```
+
+#### What is Model Building in MACS?
+
+Model building in MACS (Model-Based Analysis of ChIP-Seq) is a step that attempts to determine the average fragment size of DNA fragments from sequencing data. It uses the shifted positions of the tags (forward and reverse reads) to estimate the peak signal. The estimated fragment size is then used to build a model of the peak shape, which is important for identifying and refining peak regions.
+
+#### Model Building: Single-End vs. Paired-End
+
+- Single-End Data:
+
+Model building is used because the fragment size is not directly available from single-end reads.
+MACS shifts the reads by half the estimated fragment size to align them to the putative binding sites.
+
+- Paired-End Data:
+
+Model building is usually not needed because the fragment size is directly available from the paired-end read alignment.
+In paired-end mode, MACS calculates the actual insert size between read pairs, bypassing the need for model building.
+
+#### When to Use --no-model and --extend-size
+
+For single-end data, you might use --no-model and --extend-size in specific scenarios where you want to skip model building and manually specify the fragment size:
+
+--no-model:
+
+Disables the model building step.
+Use this option if you already know the approximate fragment size from your library preparation.
+
+--extend-size:
+
+Extends reads to the specified fragment size (e.g., 200 bp). This mimics the actual fragment length in the absence of paired-end information.
+
+#### Best Practices for Single-End Data
+
+- With Model Building (Default Behavior):
+
+Let MACS build the model unless there are specific reasons to disable it.
+
+
+macs2 callpeak -t treatment.bam -c control.bam -f BED -g hs -n sample --outdir results
+
+- Without Model Building (--no-model):
+
+Use when:
+You know the fragment size (e.g., from library preparation or empirical testing).
+The library is not suitable for accurate model building (e.g., very low read depth or noisy data).
+Specify --extend-size to set the fragment size.
+
+`macs2 callpeak -t treatment.bam -c control.bam -f BED -g hs -n sample --outdir results --no-model --extend-size 200`
+
+### Why Use --no-model and --extend-size for Single-End?
+
+Consistency: You can ensure the fragment size is consistently applied across all datasets.
+Noise Reduction: Avoid errors from noisy or low-quality data affecting model estimation.
+Speed: Skipping model building can make peak calling faster.
+
+Model building is relevant for single-end data and used by default unless --no-model is specified.
+For paired-end data, model building is typically unnecessary since the fragment size is directly calculated.
+Use --no-model --extend-size <size> for single-end data when you want to bypass model building and directly set the fragment size.
+
+
+
+### Challenges 
+
+The paper uses a previous generated ChIP-seq dataset https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE49651
+for H3K4me1, H3K4me3 and H3K27ac. The authors used H3K4me1 to define enhancers
+and H3K4me3 to define promoters. H3K4me1/H3K27ac to define active enhancers and 
+H3K4me3/H3K27ac to define active promoters. 
+
+Can you process the data yourself?
