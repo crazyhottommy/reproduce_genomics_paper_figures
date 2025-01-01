@@ -1,7 +1,7 @@
 name: reproduce_genomics_paper_figures
 output_dir: ../docs
 navbar:
-  title: chatomics:Reproduce genomics paper figures
+  title: FigRemake with Chatomics
   left:
   - text: Home
     href: index.html

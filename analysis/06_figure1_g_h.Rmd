@@ -1,0 +1,243 @@
+---
+title: "reproduce figure 1 g,h"
+output: html_document
+date: "2024-12-28"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+# https://bookdown.org/yihui/rmarkdown-cookbook/cache-lazy.html
+knitr::opts_chunk$set(
+  comment = "#>", echo = TRUE, message= FALSE, warning = FALSE,
+  cache = FALSE, cache.lazy= FALSE
+)
+```
+
+Let's re-create figure 1 g,h!
+
+![](imgs/figgh.png)
+
+### Figure 1g
+
+Figure 1g is an [`IGV`](https://igv.org/) track view. We already generated the bigwig files and 
+we can easily load them to IGV and take a screenshot. 
+
+Below is one of the known YAP1 target gene CCN2:
+
+![](imgs/ccn2.png)
+
+The paper also shows H3K4me1, H3K4me3 and H3K27ac tracks which the author 
+analyzed from a [previous dataset](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE49651) for MDA-MB-231 breast cancer cell line.
+
+I will leave the analysis from the raw fastq files as an exercise for you.
+
+### plot the tracks from scratch
+
+If you look carefully, the genome track view for the bigwig files is just a histogram.
+
+If you want to plot the bigwig signal tracks:
+
+- take a look at [plotgardner](https://phanstiellab.github.io/plotgardener/articles/guides/plotting_multiomic_data.html) bioconductor package.
+
+- [karyoploteR](https://bioconductor.org/packages/release/bioc/html/karyoploteR.html)
+I used for my [scATACutils package](https://github.com/crazyhottommy/scATACutils) for plotting [scATACseq tracks](https://rpubs.com/crazyhottommy/scATAC_tracks).
+
+- [Gviz](https://bioconductor.org/packages/devel/bioc/vignettes/Gviz/inst/doc/Gviz.html)
+
+- [ggbio](https://www.bioconductor.org/packages/release/bioc/html/ggbio.html)
+
+- [pyGenometracks](https://github.com/deeptools/pyGenomeTracks) in `python`.
+
+### Figure 1h
+
+Figure 1h is a pie chart showing the proportion of the annotation of the YAP/TAZ/TEAD4 common peaks. The annotations are: promoters, active enhancers, inactive enhancers 
+and not classified.
+
+- promoters are YAP/TAZ/TEAD4 peaks overlapping with H3K4me3 peaks
+- active enhancers are YAP/TAZ/TEAD4 peaks overlapping with H3K4me1 and H3K27ac peaks
+- inactive enhancers are YAP/TAZ/TEAD4 peaks overlapping with H3K4me1 but not H3K37ac peaks
+
+Read this [classic ChIP-seq paper](https://www.cell.com/cell/fulltext/S0092-8674(07)00600-9) from Keji Zhao's group to understand what genomic features those histone modifications are associated with. 
+
+To do this, I will download the H3K4me1, H3K4me3 and H3K27ac peaks from https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE49651.
+
+![](imgs/GEO.png)
+
+click the `ftp` or `http` in the link above, and you will download the `peaks.txt.gz` files.
+
+Note, the data were aligned to hg19 human genome. We did our alignment using hg38 genome.
+We will need to lift-over the hg19 peak files to hg38 version.
+
+```{bash eval=FALSE}
+ls data/public_data
+
+GSE49651_MDAMB231.H3K27Ac.hg19.all.MACS.1e-5_peaks.txt.gz GSE49651_MDAMB231.H3K4me3.hg19.ALL.MACS.1e-5_peaks.txt.gz
+GSE49651_MDAMB231.H3K4me1.hg19.all.MACS.1e-5_peaks.txt.gz
+
+```
+
+Download the chain file from UCSC https://hgdownload.soe.ucsc.edu/goldenpath/hg19/liftOver/
+and the command line tool from https://hgdownload.soe.ucsc.edu/admin/exe/
+
+```{bash eval=FALSE}
+curl -O https://hgdownload.soe.ucsc.edu/goldenpath/hg19/liftOver/hg19ToHg38.over.chain.gz
+
+# I am using a macs with arm64 system
+curl -O https://hgdownload.soe.ucsc.edu/admin/exe/macOSX.arm64/liftOver
+
+# make it executable
+chmod u+x liftOver
+```
+
+Now, we are ready to lift-over the coordinates from hg19 to hg38:
+
+```{bash eval=FALSE}
+./liftOver GSE49651_MDAMB231.H3K27Ac.hg19.all.MACS.1e-5_peaks.txt.gz hg19ToHg38.over.chain.gz H3K27ac.bed unmapped1.bed
+
+./liftOver GSE49651_MDAMB231.H3K4me3.hg19.ALL.MACS.1e-5_peaks.txt.gz hg19ToHg38.over.chain.gz H3K4me3.bed unmapped2.bed
+
+./liftOver GSE49651_MDAMB231.H3K4me1.hg19.all.MACS.1e-5_peaks.txt.gz hg19ToHg38.over.chain.gz H3K4me1.bed unmapped3.bed
+
+# how many peaks after the liftover
+ wc -l *bed
+   37480 H3K27ac.bed
+   26765 H3K4me1.bed
+   17991 H3K4me3.bed
+      30 unmapped1.bed
+      56 unmapped2.bed
+      12 unmapped3.bed
+```
+
+Again, we can use `bedtools` to do all those intersections and annotate the YAP1/TAZ/TEAD4 peaks. I will keep everything in R instead:
+
+```{r}
+library(rtracklayer) # for reading in bed file
+library(here)
+library(dplyr)
+library(ggplot2)
+
+TAZ_peaks<- import(here("data/fastq/TAZ_peak/TAZ_peaks.narrowPeak"))
+YAP_peaks<- import(here("data/fastq/YAP_peak/YAP_peaks.narrowPeak"))
+TEAD4_peak<- import(here("data/fastq/TEAD4_peak/TEAD4_peaks.narrowPeak"))
+
+YAP_overlap_TAZ_peaks<- subsetByOverlaps(YAP_peaks, TAZ_peaks)
+
+YAP_overlap_TAZ_peaks_overlap_TEAD4<- subsetByOverlaps(YAP_overlap_TAZ_peaks, TEAD4_peak)
+YAP_overlap_TAZ_peaks_overlap_TEAD4
+```
+
+read in the histone modification peaks:
+
+```{r}
+H3K4me1<- import(here("data/public_data/H3K4me1.bed"))
+H3K4me3<- import(here("data/public_data/H3K4me3.bed"))
+H3K27ac<- import(here("data/public_data/H3K27ac.bed"))
+```
+
+From the method section:
+
+>The presence of H3K4me1 and H3K4me3 peaks, their genomic locations and their overlap were the criteria used to define promoters and enhancers: i) H3K4me3 peaks not overlapping with H3K4me1 peaks and close to a TSS (± 5kb) were defined as promoters, as NA otherwise; ii) H3K4me1 peaks not overlapping with H3K4me3 peaks were defined as enhancers; iii) regions with the co-presence of H3K4me1 and H3K4me3 peaks were visually inspected on IGV and were defined as promoters, enhancers or NA after the evaluation of the proximity to a TSS and the comparison of the enrichment signals. Finally, promoters or enhancers were defined as active if overlapping with H3K27ac peaks.
+
+Define (in)active enhancers:
+```{r}
+active_enhancers<- subsetByOverlaps(H3K4me1, H3K27ac)
+inactive_enhancers<- subsetByOverlaps(H3K4me1, H3K27ac, invert=TRUE)
+
+promoters<- subsetByOverlaps(H3K4me3, H3K4me1, invert=TRUE)
+```
+
+>YAP/TAZ/TEAD peaks annotation
+YAP/TAZ/TEAD peaks were annotated as promoters or enhancers if their summit was overlapping with promoter or enhancer regions as defined above. Peaks with the summit falling in regions with no H3K4me1 or H3K4me3 peaks, or in NA regions were defined as "not assigned" and discarded from subsequent analyses.
+
+```{r}
+n_active_enhancers<- subsetByOverlaps(YAP_overlap_TAZ_peaks_overlap_TEAD4,
+                                      active_enhancers) %>%
+  length()
+
+n_inactive_enhancers<- subsetByOverlaps(YAP_overlap_TAZ_peaks_overlap_TEAD4,
+                                        inactive_enhancers) %>%
+  length()
+
+n_promoters<- subsetByOverlaps(YAP_overlap_TAZ_peaks_overlap_TEAD4, 
+                               promoters) %>%
+  length()
+
+n_unclassified<- length(YAP_overlap_TAZ_peaks_overlap_TEAD4) - n_active_enhancers -
+  n_inactive_enhancers - n_promoters
+```
+
+Put the numbers in a dataframe:
+```{r}
+annotation_df<- data.frame(category = c("active_enhancers", "inactive_enhancers",
+                        "promoters", "unclassified"),
+peak_number = c(n_active_enhancers, n_inactive_enhancers, 
+                n_promoters, n_unclassified))
+
+
+annotation_df
+```
+
+Let's plot a pie chart!
+```{r}
+library(ggplot2)
+
+ggplot(annotation_df, aes(x = "", y = peak_number, fill = category)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  theme_void() + # Remove unnecessary axes
+  labs(title = "YAP/TAZ/TEAD4 peaks") +
+  scale_fill_brewer(palette = "Set3") 
+
+```
+
+change the order of the categories by changing the factor level
+
+```{r}
+annotation_df$category<- factor(annotation_df$category, 
+                                levels = c("promoters", "active_enhancers",
+                                           "inactive_enhancers", "unclassified"))
+
+colors<- c("#8D1E0F", "#F57D2B", "#FADAC4", "#D4DADA")
+
+ggplot(annotation_df, aes(x = "", y = peak_number, fill = category)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  theme_void() + # Remove unnecessary axes
+  labs(title = "YAP/TAZ/TEAD4 peaks") +
+  scale_fill_manual(values = colors)
+
+```
+Note, the authors re-called the peaks using their own IgG sample:
+
+> Peak calls and read density tracks were generated using SPP version 1.1148 with default parameters and using as control sample the IgG ChIP-seq data generated in our laboratory because of the low sequencing depth of the Input DNA contained in SRP028597.
+
+This can cause drastically different number of H3K4me1/3 and H3K27ac peaks.
+It is not surprising to me that we now have a lot of unclassified peaks. 
+
+#### Add the percentage to the pie chart
+
+```{r}
+# Calculate percentages and cumulative positions for labeling
+annotation_df <- annotation_df %>%
+  dplyr::mutate(
+    percentage = peak_number / sum(peak_number) * 100,
+    label = paste0(round(percentage, 1), "%")
+  )
+
+annotation_df
+```
+
+```{r}
+# Create the pie chart
+ggplot(annotation_df, aes(x = "", y = peak_number, fill = category)) +
+  geom_bar(stat = "identity", width = 1) + 
+  coord_polar("y", start = 0) +
+  theme_void() + # Remove unnecessary axes
+  labs(title = "YAP/TAZ/TEAD4 peaks") +
+  scale_fill_manual(values = colors) +
+  geom_text(aes(label = label), position = position_stack(vjust = 0.5)) # Add percentage labels
+```
+
+Although we have a bigger proportion of unclassified peaks, the conclusion is the same:
+A large proportion of the YAP1/TAZ/TEAD4 peaks are located at active enhancers.

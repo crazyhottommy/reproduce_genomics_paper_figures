@@ -16,10 +16,28 @@ conda activate fastq_download
 
 **Tip**, `conda` is very slow. use `mamba` as a drop-in replacement for `conda`.
 
+
+### download fastq 
+
+go to GSE page https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE66083
+click one of the SRX sample https://www.ncbi.nlm.nih.gov/sra?term=SRX883576
+
+![](imgs/srx.png)
+
+
+The relationship of Experiment to Run is a 1-to-many relationship, or there can be many Run accessions associated with a single Experiment Accession (e.g. re-sequencing the same sample). Although in most cases, it is a 1-to-1 relationship, you can use --group-by-experiment to merge multiple runs associated with an Experiment accession into a single FASTQ file.
+
+and we see many SRR number for the same SRX sample.
+
+```{bash eval=FALSE}
+fastq-dl --accession SRX883576  --group-by-experiment
+
+```
+
 **Real bioinformatics problem**
 
 I could not install `fastq-dl` on my mac because my mac has a M3 chip
-and sra-tools is not compatible with it.
+and `sra-tools` is not compatible with it.
 
 ```{bash eval=FALSE}
 Platform: osx-arm64
@@ -47,35 +65,24 @@ You can list all discoverable environments with `conda info --envs`.
 
 What can I do?
 
-1. use a linux machine (e.g., Ubuntub operating system)
-2. 
+1. use a linux machine (e.g., Ubuntu operating system)
+2. use a docker container.
+3. download the fastqs from ENA
 
-### download fastq 
+I will go with option 3 as it is the easiest.
 
-go to GSE page https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE66083
-click one of the SRX sample https://www.ncbi.nlm.nih.gov/sra?term=SRX883576
-
-![](imgs/srx.png)
-
-
-The relationship of Experiment to Run is a 1-to-many relationship, or there can be many Run accessions associated with a single Experiment Accession (e.g. re-sequencing the same sample). Although in most cases, it is a 1-to-1 relationship, you can use --group-by-experiment to merge multiple runs associated with an Experiment accession into a single FASTQ file.
-
-and we see many SRR number for the same SRX sample.
-
-```{bash eval=FALSE}
-fastq-dl --accession SRX883576  --group-by-experiment
-
-```
-
-
-Instead we can download the fastq files directly from ENA.
-
-https://www.ebi.ac.uk/ena/browser/view/PRJNA275844
+go to: https://www.ebi.ac.uk/ena/browser/view/PRJNA275844 (you can usually find it by searching the GEO id):
 
 YAP_rep1 SRX883576 SRR1810900
+
 TAZ_rep1 SRX883578 SRR1810907
+
 TEAD4_rep1 SRX883582  SRR1810918
+
 IgG SRX883580 SRR1810912
+
+Also, to reduce the size of the files. I will only take one SRR for the same SRX sample.
+or you will have to download all the SRR fastq for the same SRX sample and concatenate them together.
 
 ```{bash eval=FALSE}
 cd data/fastq
@@ -98,7 +105,7 @@ mv SRR1810918.fastq.gz TEAD4.fastq.gz
 mv SRR1810912.fastq.gz IgG.fastq.gz
 ```
 
-fastq files are just text files with 4 lines for a single record.
+[fastq](https://en.wikipedia.org/wiki/FASTQ_format) files are just text files with 4 lines for a single record.
 
 ```{bash eval=FALSE}
 zless -S YAP.fastq.gz
@@ -135,6 +142,10 @@ do
   fastqc $fq
 done
 ```
+
+YAP1 fastq reads quality looks very good with phred score all over 32 for all 50 bases per read.
+
+![](imgs/fastq.png)
 
 **Tip** use [`multiQC`](https://github.com/MultiQC/MultiQC)
 

@@ -8,8 +8,38 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+![](imgs/chatomics.png)
+
+Welcome! We are going to reproduce a figure from a genomics paper.
+Take a look at [About the project](about.html).
+
+### Step by step tutorial 
 
 1. [Download fastq files](01_download_fastq_from_GEO.html).
 2. [Align fastq to genome](02_align_to_hg38.html)
 3. [Generate bigwig files and call peaks](03_generate_bigwig.html)
+4. [Re-create Fig 1 a,b,c](04_figure1_a_b_c.html)
+5. [Re-create Fig 1 d,f](05_figure1_d_f.html)
+6. [Re-create Fig 1 g,h](06_figure1_g_h.html)
+7. [Re-create Fig 1 i,j,k](07_figure1_i_j_k.html)
+8. [Now, it is your turn. Accept the challenge](08_homework.html)
+
+### More resources
+
+Do not forget to join my FREE newsletter to learn bioinformatics
+https://divingintogeneticsandgenomics.kit.com/profile
+
+Subscribe to my chatomics Youtube channel too!
+https://www.youtube.com/@chatomics/videos
+
+Happy Learning!
+
+Tommy 
+
+### References
+
+* [My own biostars ChIP-seq chapter](https://divingintogeneticsandgenomics.com/files/book_chapters/biostar_handbook_chapter.pdf)
+
+* [My own ChIP-seq github repo](https://github.com/crazyhottommy/ChIP-seq-analysis)
+
+

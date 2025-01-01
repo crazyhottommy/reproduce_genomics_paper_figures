@@ -7,11 +7,28 @@ date: "2024-12-26"
 The next step is to align the fastq files to the genome. We will use hg38 reference
 human genome for the alignment.
 
-Where to download the reference?
+### Where to download the reference?
 
-watch xx
+watch my youtube video on this topic:
 
-use refgenine.
+```{r echo=FALSE}
+library("vembedr")
+
+embed_url("https://www.youtube.com/watch?v=eIVlSG11umQ")
+```
+One can go to:
+1. UCSC https://hgdownload.soe.ucsc.edu/downloads.html
+
+2. NCBI https://www.ncbi.nlm.nih.gov/datasets/docs/v2/policies-annotation/genomeftp/
+
+3. ENSEMBL https://useast.ensembl.org/info/data/ftp/index.html
+
+4. GENCODE https://www.gencodegenes.org/
+
+to download the reference genome manually or use [refgenie](https://refgenie.databio.org/en/latest/)
+
+
+### Choose the aligner
 
 It is single-end read with 50 base pairs.
 
@@ -26,13 +43,21 @@ zless TAZ.fatq.gz | head -2 |tail -1 | wc -L
 The ChIP-seq signal can happen to anywhere in the genome, so we need an aligner 
 to align the reads to the genome.
 
-For RNAseq data, `STAR` is a popular aligner.
+For RNAseq data, we need to align the reads to a `transcriptome`. 
 
-BWA, BWA-mem is very popular for DNA-seq (WGS, WES) alignment. 
+[`STAR`](https://github.com/alexdobin/STAR) is a popular aligner for RNAseq.
 
-Let's use `bowtie2` https://bowtie-bio.sourceforge.net/bowtie2/index.shtml
+[`BWA`](https://github.com/lh3/bwa) is very popular for DNA-seq (WGS, WES) alignment. 
+
+For long reads (pacbio or nanopore), use [`minimap2`](https://github.com/lh3/minimap2).
+
+BWA and minimap2 are both developed by Heng Li, not surprisingly, the [mapping God](https://www.biostars.org/p/85637/).
+
+Let's use `bowtie2` https://bowtie-bio.sourceforge.net/bowtie2/index.shtml for our ChIP-seq data.
 
 > Bowtie 2 is an ultrafast and memory-efficient tool for aligning sequencing reads to long reference sequences. It is particularly good at aligning reads of about 50 up to 100s or 1,000s of characters, and particularly good at aligning to relatively long (e.g. mammalian) genomes.
+
+In the early days, ChIP-seq data were 36bp long, so Bowtie 1 was used.
 
 ### install bowtie2
 
@@ -77,13 +102,19 @@ bowtie2
 
 ### download index
 
-scroll down the page https://bowtie-bio.sourceforge.net/bowtie2/index.shtml
+The aligners usually needs an index file that is created using the genome reference files (fasta) we downloaded from UCSC, NCBI, ENSEMBL or GENCODE.
+
+For bowtie2, there is a pre-built index file for us to download.
+
+Scroll down the page https://bowtie-bio.sourceforge.net/bowtie2/index.shtml
 and on the left you will see the index to download. 
 
 We will download the GRCH38 (aka, hg38 without decoy). click it, it will download
 a `GRCh38_noalt_as.zip` file of 3.5G. unzip it and place the folder to the `data/reference` folder.
 
 Which reference genome to use? Bonus, read this [post](https://lh3.github.io/2017/11/13/which-human-reference-genome-to-use) by HengLi. 
+
+If there is no pre-built index, take a look at this [nf-core/references](https://github.com/nf-core/references).
 
 ```{bash eval=FALSE}
 # make sure you are in the data folder
@@ -95,24 +126,23 @@ bowtie2 -x reference/GRCh38_noalt_as/GRCh38_noalt_as -U fastq/YAP.fastq.gz -S fa
 
 `-x reference/GRCh38_noalt_as/GRCh38_noalt_as`: The path to the Bowtie2 reference genome index (built with bowtie2-build reference.fa reference_index).
 
--U input.fastq: Input FASTQ file for single-end reads.
+`-U input.fastq`: Input FASTQ file for single-end reads.
 
--S output.sam: Output alignment file in SAM format.
+`-S output.sam`: Output alignment file in SAM format.
 
---threads 8: Use 8 threads to speed up alignment.
+`--threads 8`: Use 8 threads to speed up alignment.
 
---no-mixed: Ensures that only properly paired reads are reported (not relevant for single-end data but good for ChIP-seq).
+`--no-mixed`: Ensures that only properly paired reads are reported (not relevant for single-end data but good for ChIP-seq).
 
---no-discordant: Prevents reporting discordant alignments (not relevant for single-end data but ensures consistent results for paired-end).
+`--no-discordant`: Prevents reporting discordant alignments (not relevant for single-end data but ensures consistent results for paired-end).
 
--k 1: Reports only the best alignment for each read (important for ChIP-seq to avoid multi-mapping).
+`-k 1`: Reports only the best alignment for each read (important for ChIP-seq to avoid multi-mapping).
 
 
 Below is the output. And it is super-fast!! 
 for 24 million reads, it only took me 1.5 mins with 8 CPUs.
 
 ```{bash eval=FALSE}
-
 24549590 reads; of these:
   24549590 (100.00%) were unpaired; of these:
     895629 (3.65%) aligned 0 times

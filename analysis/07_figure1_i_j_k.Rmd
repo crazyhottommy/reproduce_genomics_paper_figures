@@ -1,0 +1,292 @@
+---
+title: "reproduce figure 1 i,j,k"
+output: html_document
+date: "2024-12-29"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+# https://bookdown.org/yihui/rmarkdown-cookbook/cache-lazy.html
+knitr::opts_chunk$set(
+  comment = "#>", echo = TRUE, message= FALSE, warning = FALSE,
+  cache = FALSE, cache.lazy= FALSE
+)
+```
+
+Let's recreate Figure 1 i,j,k!
+
+![](imgs/figijk.png)
+
+### Figure 1i
+
+From the figure description:
+
+>(i) Heatmap representing YAP/TAZ/TEAD binding sites located on promoters (top) and enhancers (bottom). YAP, TAZ and TEAD4 peaks are ranked from the strongest to weakest signal in TAZ ChIP, in a window of ±1kb centered on the summit of TAZ peaks. H3K4me1 and H3K4me3 signal in the corresponding genomic regions is shown on the right.
+
+From the method section:
+
+>Heatmaps were generated using a custom R script which considers a 2-kb window centered on peak summits and calculates the normalized reads density with a resolution of 50 bp.
+
+Figure 1i is a heatmap! A heatmap is of no mystery. We use colors to represent values in a 
+matrix and then plot the matrix as a heatmap.
+
+Read [this detailed tutorial](https://rpubs.com/crazyhottommy/heatmap_demystified) from me.
+
+We know the underlying data is a matrix. What are the rows and columns for this matrix?
+The rows are different peaks. The columns are 2kb window centered on the summit of the TAZ peaks with 50 bp per bin. So it will be `2000/50 = 40` bins for the columns.
+
+The `signal` is the normalized read counts in each bin.
+We can do it from scratch with `bedtools multicov` to get the counts per bin for each YAP1/TAZ/TEAD4 peak like we did for the scatter plot in Figure 1d. Then, re-arrange it to
+a matrix and plot. 
+
+Usually, there is always some packages that can be used to do the task.
+
+Here is a list of the tools can be used.
+
+I am going to use [`EnrichedHeatmap`](https://www.bioconductor.org/packages/release/bioc/html/EnrichedHeatmap.html) which is built upon the awesome [`ComplexHeatmap`](https://bioconductor.org/packages/release/bioc/html/ComplexHeatmap.html).
+
+
+```{r}
+library(rtracklayer) # for reading in bed file
+library(here)
+library(dplyr)
+library(ggplot2)
+
+TAZ_peaks<- import(here("data/fastq/TAZ_peak/TAZ_peaks.narrowPeak"))
+YAP_peaks<- import(here("data/fastq/YAP_peak/YAP_peaks.narrowPeak"))
+TEAD4_peak<- import(here("data/fastq/TEAD4_peak/TEAD4_peaks.narrowPeak"))
+
+YAP_overlap_TAZ_peaks<- subsetByOverlaps(YAP_peaks, TAZ_peaks)
+
+YAP_overlap_TAZ_peaks_overlap_TEAD4<- subsetByOverlaps(YAP_overlap_TAZ_peaks, TEAD4_peak)
+YAP_overlap_TAZ_peaks_overlap_TEAD4
+```
+
+Since we focused on `YAP1`, I will use the summit of YAP1 as the anchor point.
+We can of course change it to `TAZ` too.
+
+```{r}
+YAP_summit<- import(here("data/fastq/YAP_peak/YAP_summits.bed"))
+YAP_summit
+```
+subset it to only the common peaks of YAP1/TAZ/TEAD4:
+
+read in the histone modification peaks:
+
+```{r}
+H3K4me1<- import(here("data/public_data/H3K4me1.bed"))
+H3K4me3<- import(here("data/public_data/H3K4me3.bed"))
+H3K27ac<- import(here("data/public_data/H3K27ac.bed"))
+```
+
+Define enhancers and promoters:
+```{r}
+enhancers<- subsetByOverlaps(H3K4me1, H3K4me3, invert=TRUE)
+
+promoters<- subsetByOverlaps(H3K4me3, H3K4me1, invert=TRUE)
+```
+
+annotate the YAP1/TAZ/TEAD4 peaks:
+```{r}
+YAP1_enhancers<- subsetByOverlaps(YAP_overlap_TAZ_peaks_overlap_TEAD4, enhancers) 
+
+YAP1_promoters<- subsetByOverlaps(YAP_overlap_TAZ_peaks_overlap_TEAD4, promoters) 
+
+```
+
+```{r}
+YAP1_enhancers$name %>% head()
+
+YAP_summit_enhancer<- YAP_summit[YAP_summit$name %in% YAP1_enhancers$name]
+YAP_summit_promoter<- YAP_summit[YAP_summit$name %in% YAP1_promoters$name]
+
+# combine them
+anchors<- c(YAP_summit_promoter, YAP_summit_enhancer) 
+```
+
+We need to import the bigwig files we generated in [here](03_generate_bigwig.html)
+
+```{r}
+YAP1_bw<- import(here("data/fastq/YAP.bw"))
+TAZ_bw<- import(here("data/fastq/TAZ.bw"))
+TEAD4_bw<- import(here("data/fastq/TEAD4.bw"))
+
+# it is a GRanges object
+YAP1_bw
+```
+
+Now, quantify the the signal in the bins 
+
+```{r}
+# BiocManager::install("EnrichedHeatmap")
+library(EnrichedHeatmap)
+# extend 1000 bp on each side and use 50bp bin
+mat1<- normalizeToMatrix(YAP1_bw, anchors, value_column = "score",
+                         extend= 1000, mean_mode = "w0", w=50)
+
+mat2<- normalizeToMatrix(TAZ_bw, anchors, value_column = "score",
+                         extend= 1000, mean_mode = "w0", w=50)
+
+mat3<- normalizeToMatrix(TEAD4_bw, anchors, value_column = "score",
+                         extend= 1000, mean_mode = "w0", w=50)
+```
+
+The matrix should be `length(achors) = 3762` rows by `2000/50 = 40` columns.
+Let's verify it:
+```{r}
+dim(mat1)
+dim(mat2)
+dim(mat3)
+
+mat1[1:5, 1:40 ]
+```
+
+It is a matrix with u1 to u20 for upstream bins and d1 to d20 for downstream bins.
+
+map the color to the values. 
+First, check the data ranges:
+```{r}
+quantile(mat1, c(0.1,0.25,0.5,0.9,1))
+quantile(mat2, c(0.1,0.25,0.5,0.9,1))
+quantile(mat3, c(0.1,0.25,0.5,0.9,1))
+
+col_fun<- circlize::colorRamp2(c(0, 20), c("white", "red"))
+```
+We map white to red from 0 to 20. any value that is above 20 will be mapped to red too.
+
+We need to separate the promoters and enhancers
+```{r}
+partition<- c(rep("promoters", length(YAP1_promoters)),
+              rep("enhancers", length(YAP1_enhancers)))
+
+# change the factor level so promoters come first
+partition<- factor(partition, levels=c("promoters", "enhancers"))
+
+partition_hp<- Heatmap(partition, col=structure(2:3, names = c("promoters", "enhancers")), 
+        name = "partition",
+        show_row_names = FALSE, width=unit(3,'mm'))
+
+partition_hp
+```
+
+
+```{r}
+ht_list<- partition_hp +
+  EnrichedHeatmap(mat1, pos_line = FALSE, column_title="YAP1", name = "YAP1", col=col_fun) +
+  EnrichedHeatmap(mat2, pos_line = FALSE, column_title="TAZ", name = "TAZ", col=col_fun) +
+  EnrichedHeatmap(mat3, pos_line = FALSE, column_title="TEAD4", name = "TEAD4", col=col_fun)
+
+draw(ht_list, split= partition, main_heatmap =2)
+```
+
+Note: make sure you have https://www.xquartz.org/ installed on your macOS. 
+
+We can change the size of the figure to make it look more similar than the original figure:
+
+```{r fig.width=4, fig.height=6}
+draw(ht_list, split= partition, main_heatmap =2)
+```
+
+I skipped the H3K4me1 and H3K4me3 plotting. I will leave it to you as an exercise.
+
+### Figure 1j
+
+Figure description:
+
+>(j) Bimodal distribution of H3K4me1 signal around the summit of YAP/TAZ and TEAD4 peaks.
+
+It is a line plot! You noticed that when we recreated Figure 1i, the lineplot on top of 
+the heatmap is what we want. The line plot is just the average of all the peaks per column.
+
+```{r}
+YAP1_mean<- colMeans(mat1)
+TAZ_mean<- colMeans(mat2)
+TEAD4_mean<- colMeans(mat3)
+
+YAP1_mean
+```
+
+plot the dots:
+```{r}
+plot(YAP1_mean)
+```
+
+make it to a single dataframe:
+```{r}
+bind_rows(YAP1_mean, TAZ_mean, TEAD4_mean) %>%
+  mutate(factor = c("YAP1", "TAZ", "TEAD4")) %>%
+  select(factor, everything())
+  
+```
+
+make it to a long form:
+```{r}
+bind_rows(YAP1_mean, TAZ_mean, TEAD4_mean) %>%
+  mutate(factor = c("YAP1", "TAZ", "TEAD4")) %>%
+  select(factor, everything()) %>%
+  tidyr::pivot_longer(-factor)
+```
+
+
+```{r}
+bind_rows(YAP1_mean, TAZ_mean, TEAD4_mean) %>%
+  mutate(factor = c("YAP1", "TAZ", "TEAD4")) %>%
+  select(factor, everything()) %>%
+  tidyr::pivot_longer(-factor) %>%
+  ggplot(aes(x=name, y=value)) +
+  geom_line(aes(color = factor, group=factor))
+```
+
+Need to change the x-axis order by changing factor levels
+
+```{r}
+bind_rows(YAP1_mean, TAZ_mean, TEAD4_mean) %>%
+  mutate(factor = factor(c("YAP1", "TAZ", "TEAD4"), levels = c("YAP1", "TAZ", "TEAD4"))) %>%
+  select(factor, everything()) %>%
+  tidyr::pivot_longer(-factor) %>%
+  mutate(name = factor(name, levels = c(paste0("u",1:20), paste0("d", 1:20)))) %>%
+  ggplot(aes(x=name, y=value)) +
+  geom_line(aes(color = factor, group=factor)) +
+  scale_x_discrete(breaks=c("u1", "d1", "d20"), labels = c("-1kb", "0", "1kb")) +
+  scale_color_manual(values = c("#DA9195", "#E07B78", "#605D7D")) +
+  theme_classic(base_size = 14) +
+  ylab("RPKM") +
+  xlab("")
+  
+```
+
+You will notice that the y-axis data range is different, that's because the bigwig
+files are normalized by `RPKM` (reads per kilobase per million). The paper used `CPM`(counts per million). Nevertheless, the pattern is the same. 
+
+### Figure 1k
+
+We have done this for Figure 1f for the stacked bar plot. 
+You can do the same analysis as Figure 1f and then plot it as a regular bar plot.
+I will leave it as an exercise for you!
+
+Hooray! Congratulations! We have successfully reproduced most of the panels of figure 1 from a genomics paper. 
+
+
+### Key takeaways 
+
+1. Learn the preprocessing steps for a particular NGS data type. Mostly it invovles using unix commands.
+
+2. analyze the figures. what type of plot is it? what data are needed? what are the x-axis and y-axis?
+
+3. wrangle the data into a single dataframe into the right format. You will need to be really familar with the `dplyr` and `tidyr` in the `tiydverse` ecosystem
+
+4. know which R/bioconductor packages to use. Ask ChatGPT if you do not know!
+
+5. Once everything is in a dataframe, you can use `ggplot2` to make any figure you want.
+
+Do not forget to join my FREE newsletter to learn bioinformatics
+https://divingintogeneticsandgenomics.kit.com/profile
+
+Subscribe to my chatomics Youtube channel too!
+https://www.youtube.com/@chatomics/videos
+
+Happy Learning!
+
+Tommy 
+

@@ -1,0 +1,290 @@
+---
+title: "reproduce figure1 a b c"
+output: html_document
+date: "2024-12-27"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+# https://bookdown.org/yihui/rmarkdown-cookbook/cache-lazy.html
+knitr::opts_chunk$set(
+  comment = "#>", echo = TRUE, message= FALSE, warning = FALSE,
+  cache = FALSE, cache.lazy= FALSE
+)
+```
+
+Now the fun starts as we finished all the pre-processing steps. Let's recreate 
+the figure 1a,b,c!
+
+![](imgs/figabc.png)
+
+### Figure 1a
+
+Figure 1a and 1b are venn-diagram showing the overlapping peak number of 
+YAP/TAZ and YAP/TAZ/TEAD4
+
+To find overlap/intersection of genomic regions, one can use the famous [`bedtools`](https://bedtools.readthedocs.io/en/latest/index.html) on
+command line or use `GenomicRanges` in `R`.
+
+#### Let's try bedtools first.
+
+```{bash eval=FALSE}
+conda install bedtools
+```
+
+The most frequently used command is the [`bedtools intersect`](https://bedtools.readthedocs.io/en/latest/content/tools/intersect.html) command.
+
+![](imgs/bedtools.png)
+```{bash eval=FALSE}
+cd data/fatstq
+
+bedtools intersect -a TAZ_peak/TAZ_peaks.narrowPeak -b YAP_peak/YAP_peaks.narrowPeak -wa | wc -l
+
+7199
+
+```
+There are `7199` TAZ peaks overlap with YAP1 peaks.
+
+I usually pipe the output to sort | uniq to get the unique TAZ peaks because there are
+could be one TAZ peak overlapping with mulitiple YAP1 peaks and it gets repeated in the `bedtools` output.
+
+```{bash eval=FALSE}
+bedtools intersect -a TAZ_peak/TAZ_peaks.narrowPeak -b YAP_peak/YAP_peaks.narrowPeak -wa | sort | uniq |  wc -l
+
+7154
+```
+
+
+There are `7154` **unique** TAZ peaks overlap with YAP1 peaks.
+
+#### Use GenomicRanges in R
+
+Let's use R instead with the `GenomicRanges` package.
+Read my [blog post](https://divingintogeneticsandgenomics.com/post/genomic-interval/) on why we need to learn how to use it.
+
+```{r}
+library(GenomicRanges)
+library(rtracklayer) # for reading in bed file
+library(here)
+TAZ_peaks<- import(here("data/fastq/TAZ_peak/TAZ_peaks.narrowPeak"))
+YAP_peaks<- import(here("data/fastq/YAP_peak/YAP_peaks.narrowPeak"))
+
+TAZ_peaks
+YAP_peaks
+```
+We have `r length(YAP_peaks)` YAP1 peaks and `r length(TAZ_peaks)` TAZ peaks. How many of them overlap?
+
+```{r}
+TAZ_overlap_YAP_peaks<- subsetByOverlaps(TAZ_peaks, YAP_peaks)
+length(TAZ_overlap_YAP_peaks)
+
+YAP_overlap_TAZ_peaks<- subsetByOverlaps(YAP_peaks, TAZ_peaks)
+length(YAP_overlap_TAZ_peaks)
+```
+
+so we have 7154 out of 10719 TAZ peaks overlapping with YAP1 peaks. (Note, this is the same number we got from `bedtools intersect`).
+
+and we have 7164 out of 9807 YAP1 peaks overlapping with TAZ peaks.
+
+The venn-diagram needs a common number in the intersection. How do we deal with 
+it? There are different decisions you can make and it does not affect the conclusion
+of the figure: most of the TAZ and YAP1 peaks overlap!
+
+We can just use the number of YAP1 peaks that overlap with TAZ as the intersection.
+
+There are many packages to make a venndiagram. I use [`Vennerable`](https://github.com/js229/Vennerable).
+
+```{r}
+# devtools::install_github("js229/Vennerable")
+
+library(Vennerable)
+
+n_YAP <- length(YAP_peaks)  # Total peaks 
+n_TAZ <- length(TAZ_peaks)  # Total peaks 
+
+n_overlap <- length(YAP_overlap_TAZ_peaks)
+
+venn_data <- Venn(SetNames = c("YAP", "TAZ"),
+                  Weight = c(
+                    "10" = n_YAP, # Unique to A
+                    "01" = n_TAZ, # Unique to B
+                    "11" = n_overlap         # Intersection
+                  ))
+
+# Plot the Venn diagram
+plot(venn_data)
+
+
+```
+
+You can also use `makeVennDiagram` in the `ChIPpeakAnno` package.
+
+In our case, we already have the number of the two sets and the intersection, so
+we used `vennerable`.
+
+Take a look at [ggVennDiagram](https://github.com/gaospecial/ggVennDiagram) too
+
+### Figure 1b
+
+We can easily make Figure 1b now that we have some foundations.
+
+```{r}
+TEAD4_peak<- import(here("data/fastq/TEAD4_peak/TEAD4_peaks.narrowPeak"))
+
+YAP_overlap_TAZ_peaks_overlap_TEAD4<- subsetByOverlaps(YAP_overlap_TAZ_peaks, TEAD4_peak)
+
+n_YAP_TAZ <- length(YAP_overlap_TAZ_peaks)  # Total peaks 
+n_TEAD4 <- length(TAZ_peaks)  # Total peaks 
+n_overlap2<- length(YAP_overlap_TAZ_peaks_overlap_TEAD4)
+
+venn_data2 <- Venn(SetNames = c("YAP/TAZ", "TEAD4"),
+                  Weight = c(
+                    "10" = n_YAP_TAZ, # Unique to A
+                    "01" = n_TEAD4, # Unique to B
+                    "11" = n_overlap2        # Intersection
+                  ))
+
+# Plot the Venn diagram
+plot(venn_data2)
+```
+
+### Figure 1c
+
+This figure requires a little more work. Let's decompose it.
+
+Description of the figure in the paper:
+
+>(c) Position of TEAD4 peak summits relative to the summits of the overlapping YAP/TAZ peaks, in a 500 bp window surrounding the summit of YAP/TAZ peaks.
+
+>TAZ peaks coordinates and summit positions were used to represent common peaks between YAP and TAZ peaks (YAP/TAZ peaks) and were used when comparing YAP/TAZ peaks with other ChIP-seq data.
+
+- data we need: the TAZ peak set and the TEAD4 peak set.
+- x-axis: when a TEAD peak overlaps with a TAZ peak, the distance between the
+summit of the the TAZ peak and the TEAD4 peak summit.
+- y-axis: the number of TEAD peaks for each distance
+
+A summit is the highest signal point within a peak. `MACS3` outputs that.
+
+```{r}
+
+TAZ_summit<- import(here("data/fastq/TAZ_peak/TAZ_summits.bed"))
+
+TAZ_summit<- TAZ_summit[TAZ_summit$name %in% TAZ_overlap_YAP_peaks$name]
+
+TEAD4_summit<- import(here("data/fastq/TEAD4_peak/TEAD4_summits.bed"))
+
+TEAD4_summit
+```
+They both represent a single base point that has the highest signal in the peaks.
+
+expand the TAZ summit to a 500bp window
+```{r}
+TAZ_500bp_window<- resize(TAZ_summit, width = 500, fix="center")
+
+hits<- findOverlaps(TEAD4_summit, TAZ_500bp_window)
+
+# a hits object with the indices of the overlapping query and subject
+hits
+summit_distance<- distance(TEAD4_summit[queryHits(hits)], TAZ_summit[subjectHits(hits)])
+
+table(summit_distance)
+
+TEAD4_summit[queryHits(hits)][summit_distance ==0]
+TAZ_summit[subjectHits(hits)][summit_distance ==0]
+```
+The built-in `distance` function returns the pair-wise distance in absolute value.
+
+Let's revise it to return negative values when TEAD4 summit precede the TAZ summit 
+and positive values when TEAD4 summit follows TAZ summit.
+
+```{r}
+# Compute signed distances
+signed_distance <- function(A, B) {
+  # Compute unsigned distance
+  dist <- distance(A, B)
+  
+  # Determine signs based on whether A precedes or follows B
+  sign <- ifelse(start(A) < start(B), -1, 1)
+  
+  # Apply sign to distance
+  dist * sign
+}
+
+```
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+summit_distance<- signed_distance(TEAD4_summit[queryHits(hits)],
+                                  TAZ_summit[subjectHits(hits)])
+
+distance_df<- table(summit_distance) %>%
+  tibble::as_tibble() 
+
+distance_df
+```
+
+Let's plot!!
+```{r}
+distance_df %>%
+  ggplot(aes(x=summit_distance, y = n)) +
+  geom_point()
+```
+
+Hmm, something is off... the summit distance on the x-axis needs to be reordered
+
+```{r}
+distance_df %>%
+  mutate(summit_distance = as.numeric(summit_distance)) %>%
+  arrange(summit_distance) %>%
+  ggplot(aes(x=summit_distance, y = n)) +
+  geom_point()
+```
+
+Let's connect the points with a line:
+
+```{r}
+distance_df %>%
+  mutate(summit_distance = as.numeric(summit_distance)) %>%
+  arrange(summit_distance) %>%
+  ggplot(aes(x=summit_distance, y = n)) +
+  geom_line()
+```
+
+The plot looks too wigglely. Let's smooth it by average the number of peaks
+per 5 bp bin.
+
+```{r}
+df_binned <- distance_df %>%
+  mutate(summit_distance = as.numeric(summit_distance)) %>%
+  arrange(summit_distance) %>%
+  mutate(bin = floor(summit_distance / 5) * 5) %>%  # Create bins by grouping every 5 bp
+  group_by(bin) %>%
+  summarise(n = mean(n, na.rm = TRUE))  # Calculate average 'n' for each bin
+```
+
+- `mutate(bin = floor(summit_distance / 5) * 5)`:
+
+Groups summit_distance values into 5 bp bins by dividing by 5, taking the floor (rounding down), and multiplying back by 5 to get the bin lower bound.
+
+
+```{r}
+# View the binned dataframe
+print(df_binned)
+
+df_binned %>%
+  ggplot(aes(x=bin, y = n)) +
+  geom_line() +
+  scale_x_continuous(breaks = c(-250, 0, 250)) +
+  xlab("distance to the summit \nof TAZ peaks (bp)") +
+  ylab("peak density") +
+  theme_classic(base_size = 14) 
+```
+
+
+**Tip**: how do I what packages to use?
+google "plotting genome tracks bioconductor"
+or ask ChatGPT!!
+

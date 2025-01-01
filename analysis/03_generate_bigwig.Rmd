@@ -91,14 +91,57 @@ ls YAP_peak/
 YAP1_model.r          YAP1_peaks.narrowPeak YAP1_peaks.xls        YAP1_summits.bed
 ```
 
-Do it for all samples
+Do it for all samples.
 
 ```{bash eval=FALSE}
 for bam in *sorted.bam
 do
-  macs3 callpeak -t $bam -c IgG.sorted.bam -f BAM -n ${bam%.sorted.bam} -g hs --outdir ${bam/.sorted.bam/_peak}
+  if [[ "$bam" != "IgG.sorted.bam" ]]; then
+    echo macs3 callpeak -t $bam -c IgG.sorted.bam -f BAM -n ${bam%.sorted.bam} -g hs --outdir ${bam/.sorted.bam/_peak}
+  fi
+done
+
+macs3 callpeak -t TAZ.sorted.bam -c IgG.sorted.bam -f BAM -n TAZ -g hs --outdir TAZ_peak
+macs3 callpeak -t TEAD4.sorted.bam -c IgG.sorted.bam -f BAM -n TEAD4 -g hs --outdir TEAD4_peak
+macs3 callpeak -t YAP.sorted.bam -c IgG.sorted.bam -f BAM -n YAP -g hs --outdir YAP_peak
+```
+We learned something new here!
+
+`if [[ "$bam" != "IgG.bam" ]]; then:` Checks if the current file is not IgG.bam.
+
+remove the "echo" and run it:
+```{bash eval=FALSE}
+for bam in *sorted.bam
+do
+  if [[ "$bam" != "IgG.sorted.bam" ]]; then
+    macs3 callpeak -t $bam -c IgG.sorted.bam -f BAM -n ${bam%.sorted.bam} -g hs --outdir ${bam/.sorted.bam/_peak}
+  fi
 done
 ```
+
+How many peaks we get for each transcription factor?
+
+```{bash eval=FALSE}
+find . -name "*Peak"  | xargs wc -l
+   11512 ./TEAD4_peak/TEAD4_peaks.narrowPeak
+   10719 ./TAZ_peak/TAZ_peaks.narrowPeak
+    9807 ./YAP_peak/YAP_peaks.narrowPeak
+   32038 total
+```
+
+According to the manual page:
+
+>NAME_peaks.narrowPeak is BED6+4 format file which contains the peak locations together with peak summit, p-value, and q-value. If you plan to load it to the UCSC genome browser, please make sure that you turn on --trackline option. Definition of some specific columns are:
+
+>5th: integer score for display. It’s calculated as int(-10*log10pvalue) or int(-10*log10qvalue) depending on whether -p (pvalue) or -q (qvalue) is used as score cutoff. Please note that currently this value might be out of the [0-1000] range defined in UCSC ENCODE narrowPeak format. You can let the value saturated at 1000 (i.e. p/q-value = 10^-100) by using the following 1-liner awk: awk -v OFS="\t" '{$5=$5>1000?1000:$5} {print}' NAME_peaks.narrowPeak
+
+>7th: fold-change at peak summit
+
+>8th: -log10pvalue at peak summit
+
+>9th: -log10qvalue at peak summit
+
+>10th: relative summit position to peak start
 
 #### What is Model Building in MACS?
 

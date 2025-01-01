@@ -1,5 +1,7 @@
-# reproduce_genomics_paper_figures
+# reproduce_a_genomics_paper_figure
 
-A [workflowr][] project.
+Let's try to reproduce Figure 1 from this paper https://pmc.ncbi.nlm.nih.gov/articles/PMC6186417/
 
-[workflowr]: https://github.com/workflowr/workflowr
+![](imgs/emss-79986-f001.jpg)
+
+GEO dataset https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE66083

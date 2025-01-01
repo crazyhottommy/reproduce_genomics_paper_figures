@@ -1,0 +1,391 @@
+---
+title: "reproduce figure 1 d f"
+output: html_document
+date: "2024-12-28"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include=FALSE}
+# https://bookdown.org/yihui/rmarkdown-cookbook/cache-lazy.html
+knitr::opts_chunk$set(
+  comment = "#>", echo = TRUE, message= FALSE, warning = FALSE,
+  cache = FALSE, cache.lazy= FALSE
+)
+```
+
+Now, let's re-create figure 1 d and f.
+
+![](imgs/figdef.png)
+
+### Figure 1d
+
+Look at figure 1d, it is a scatter plot.
+what do we need?
+
+- we need the YAP, TAZ, and TEAD4 signal. This is the number of sequencing reads
+- x-axis: TEAD4 signal
+- y-axis: YAP1 signal
+
+From the figure description:
+
+>(d) Linear correlation between the signal of YAP or TAZ and TEAD4 peaks in the 5522 shared binding sites. r2 is the coefficients of determination of the two correlations.
+
+
+Read in the peak files:
+
+```{r}
+library(GenomicRanges)
+library(rtracklayer) # for reading in bed file
+library(here)
+library(dplyr)
+library(ggplot2)
+
+TAZ_peaks<- import(here("data/fastq/TAZ_peak/TAZ_peaks.narrowPeak"))
+YAP_peaks<- import(here("data/fastq/YAP_peak/YAP_peaks.narrowPeak"))
+TEAD4_peak<- import(here("data/fastq/TEAD4_peak/TEAD4_peaks.narrowPeak"))
+
+YAP_overlap_TAZ_peaks<- subsetByOverlaps(YAP_peaks, TAZ_peaks)
+
+YAP_overlap_TAZ_peaks_overlap_TEAD4<- subsetByOverlaps(YAP_overlap_TAZ_peaks, TEAD4_peak)
+YAP_overlap_TAZ_peaks_overlap_TEAD4
+
+# use rtracklayer to write the GenomicRanges object to file
+export(YAP_overlap_TAZ_peaks_overlap_TEAD4, 
+       con = here("data/fastq/YAP_TAZ_TEAD4_common.bed"))
+```
+
+The next step is to get the 'signal' in those common peaks for YAP, TAZ and TEAD4, respectively.  How do we do it?
+
+The signal is the number of reads fall/mapped into those peaks/regions.
+and normalized to total number of reads (library size) for each experiment. 
+
+There are multiple ways to do it.
+
+#### count the number of reads from bam files with bedtools 
+
+The [`mutlicov`](https://bedtools.readthedocs.io/en/latest/content/tools/multicov.html) subcommand from bedtools is what we need.
+
+>bedtools multicov, reports the count of alignments from multiple position-sorted and indexed BAM files that overlap intervals in a BED file. Specifically, for each BED interval provided, it reports a separate count of overlapping alignments from each BAM file.
+
+```{bash eval=FALSE}
+cd data/fastq
+bedtools multicov -bams YAP.sorted.bam TAZ.sorted.bam TEAD4.sorted.bam -bed YAP_TAZ_TEAD4_common.bed > YAP_TAZ_TEAD4_counts.tsv
+```
+
+It takes less than a minute to finish. Let's take a look at the file
+
+```{bash eval=FALSE}
+head YAP_TAZ_TEAD4_counts.tsv
+chr1	1024627	1025059	YAP_peak_3	494	.	88	72	82
+chr1	1264836	1265155	YAP_peak_4	148	.	32	37	88
+chr1	1265319	1265695	YAP_peak_5	131	.	29	31	26
+chr1	1360617	1360955	YAP_peak_6	306	.	46	52	88
+chr1	1659297	1659586	YAP_peak_8	45	.	15	14	20
+chr1	2061242	2061682	YAP_peak_10	356	.	54	65	60
+chr1	2140001	2140346	YAP_peak_11	86	.	27	18	27
+chr1	3543323	3543624	YAP_peak_12	155	.	24	30	28
+chr1	6724590	6724868	YAP_peak_14	251	.	38	42	90
+chr1	8061325	8061624	YAP_peak_17	62	.	21	34	38
+```
+
+The last three columns are counts for YAP1, TAZ and TEAD4 in the common regions.
+
+We need to normalize it to total number of reads in each library.
+Let's use `samtools flagstat`:
+
+```{bash eval=FALSE}
+samtools flagstat YAP.sorted.bam
+24549590 + 0 in total (QC-passed reads + QC-failed reads)
+24549590 + 0 primary
+0 + 0 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+0 + 0 primary duplicates
+23653961 + 0 mapped (96.35% : N/A)
+23653961 + 0 primary mapped (96.35% : N/A)
+0 + 0 paired in sequencing
+0 + 0 read1
+0 + 0 read2
+0 + 0 properly paired (N/A : N/A)
+0 + 0 with itself and mate mapped
+0 + 0 singletons (N/A : N/A)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ>=5)
+
+samtools flagstat TAZ.sorted.bam
+27521260 + 0 in total (QC-passed reads + QC-failed reads)
+27521260 + 0 primary
+0 + 0 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+0 + 0 primary duplicates
+26789648 + 0 mapped (97.34% : N/A)
+26789648 + 0 primary mapped (97.34% : N/A)
+0 + 0 paired in sequencing
+0 + 0 read1
+0 + 0 read2
+0 + 0 properly paired (N/A : N/A)
+0 + 0 with itself and mate mapped
+0 + 0 singletons (N/A : N/A)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ>=5)
+
+samtools flagstat TEAD4.sorted.bam
+34776462 + 0 in total (QC-passed reads + QC-failed reads)
+34776462 + 0 primary
+0 + 0 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+0 + 0 primary duplicates
+34332907 + 0 mapped (98.72% : N/A)
+34332907 + 0 primary mapped (98.72% : N/A)
+0 + 0 paired in sequencing
+0 + 0 read1
+0 + 0 read2
+0 + 0 properly paired (N/A : N/A)
+0 + 0 with itself and mate mapped
+0 + 0 singletons (N/A : N/A)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ>=5)
+
+```
+
+So the total number of priamry mapped reads are: `23653961`, `26789648` and `34332907`
+for YAP, TAZ and TEAD4, respectively.
+
+Load the data into R:
+
+```{r}
+library(readr)
+counts<- read_tsv(here("data/fastq/YAP_TAZ_TEAD4_counts.tsv"), col_names = FALSE)
+colnames(counts)<- c("chr", "start", "end", "name", "score", "value", "YAP1", "TAZ", "TEAD4")
+
+head(counts)
+```
+
+normalize the counts to `CPM` (counts per million).
+
+```{r}
+counts<- counts %>%
+  mutate(YAP1 = YAP1/23653961 * 10^6,
+         TAZ = TAZ/26789648 * 10^6,
+         TEAD4 = TEAD4/34332907 * 10^6)
+
+head(counts)
+```
+
+Now we are ready to plot!
+
+```{r}
+ggplot(counts, aes(x=TEAD4, y= YAP1)) +
+  geom_point()
+```
+
+There is an outlier with strong signal (note, check it on IGV to see if it is real, it could be a black-listed region with strong signal)
+
+```{r}
+counts %>%
+  filter(TEAD4 > 60)
+```
+
+It looks real on IGV and I checked it is not in one of the blacklisted regions.
+
+![](imgs/strong_igv.png)
+
+Note: Download the blacklisted regions from [here](https://github.com/Boyle-Lab/Blacklist/tree/master): https://github.com/Boyle-Lab/Blacklist/blob/master/lists/hg38-blacklist.v2.bed.gz
+
+We can remove that outlier, or use log2 scale
+```{r}
+ggplot(counts, aes(x=TEAD4, y= YAP1)) +
+  geom_point(color = "#ff4000") +
+  scale_x_continuous(trans = 'log2') +
+  scale_y_continuous(trans = 'log2') +
+  theme_classic(base_size = 14) +
+  xlab("TEAD4 signal") +
+  ylab("YAP1 signal")
+```
+
+We will use [`ggpmisc`](https://github.com/aphalo/ggpmisc) to add the R^2.
+
+```{r}
+library(ggpmisc)
+ggplot(counts, aes(x=TEAD4, y= YAP1)) +
+  geom_point(color = "#ff4000") +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +  # Linear regression line
+  stat_poly_eq(
+    aes(label = ..rr.label..),
+    formula = y ~ x,
+    parse = TRUE,
+    color = "black"
+  ) +
+  scale_x_continuous(trans = 'log2') +
+  scale_y_continuous(trans = 'log2') +
+  theme_classic(base_size = 14) +
+  xlab("TEAD4 signal") +
+  ylab("YAP1 signal")
+
+
+```
+
+correlation coefficent is the r which ranges from -1 to 1.
+Coefficient of Determination is the R^2.
+```{r}
+correlation_coefficent<- cor(log2(counts$TEAD4), log2(counts$YAP1))
+correlation_coefficent
+
+R_squared<- correlation_coefficent^2
+
+R_squared
+```
+
+We can re-create the other scatter plot easily:
+
+```{r}
+ggplot(counts, aes(x=TEAD4, y= TAZ)) +
+  geom_point(color = "#ff4000") +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +  # Linear regression line
+  stat_poly_eq(
+    aes(label = ..rr.label..),
+    formula = y ~ x,
+    parse = TRUE,
+    color = "black"
+  ) +
+  scale_x_continuous(trans = 'log2') +
+  scale_y_continuous(trans = 'log2') +
+  theme_classic(base_size = 14) +
+  xlab("TEAD4 signal") +
+  ylab("TAZ signal")
+```
+
+**Tip**: take a look at [`ggpubr`](https://rpkgs.datanovia.com/ggpubr/reference/stat_cor.html)
+
+### Figure 1f
+
+>(f) Absolute distance of YAP peaks (n=7709), TAZ peaks (n=9798), TEAD4 peaks (n=8406) or overlapping YAP/TAZ/TEAD peaks (n=5522) to the nearest TSS.
+
+Figure 1f is a stacked bar plot. It shows the proportion of the peaks grouped by their 
+distance to the closest TSS (transcription start site).
+
+I will show you how to do this from scratch:
+
+```{r}
+# BiocManager::install("TxDb.Hsapiens.UCSC.hg38.knownGene")
+
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+library(GenomicRanges)
+library(GenomicFeatures)
+# Get the TSS
+hg38_transcripts <- transcripts(TxDb.Hsapiens.UCSC.hg38.knownGene)
+
+# get the TSS.
+tss_gr <- promoters(hg38_transcripts, upstream=0, downstream=1)
+
+```
+
+```{r}
+# Calculate the distance to the nearest TSS
+distance_to_tss <- distanceToNearest(YAP_peaks, tss_gr)
+
+# Print the distance
+distance_to_tss
+```
+It is a `Hits` object, and we can access the the `distance` metadata column 
+
+```{r}
+mcols(distance_to_tss)
+
+head(mcols(distance_to_tss)$distance)
+```
+
+Let's do that for all three factors:
+```{r}
+YAP_dist<- mcols(distanceToNearest(YAP_peaks, tss_gr))$distance
+TAZ_dist<- mcols(distanceToNearest(TAZ_peaks, tss_gr))$distance
+TEAD4_dist<- mcols(distanceToNearest(TEAD4_peak, tss_gr))$distance
+```
+
+put them in a single dataframe
+```{r}
+tss_distance_df<- bind_rows(data.frame(factor = "YAP", distance = YAP_dist),
+          data.frame(factor = "TAZ", distance = TAZ_dist),
+          data.frame(factor = "TEAD4", distance = TEAD4_dist))
+          
+head(tss_distance_df)
+
+tss_distance_df %>%
+  mutate(category = case_when(
+    distance < 1000 ~ "<1kb",
+    distance >=1000 & distance < 10000 ~ "1-10kb",
+    distance >= 10000 & distance <=100000 ~ "10-100kb",
+    distance > 100000 ~ "100kb"
+  )) %>%
+  head()
+```
+
+You can see how I build the pipe `%>%` step by step.
+
+```{r}
+counts_per_category<- tss_distance_df %>%
+  mutate(category = case_when(
+    distance < 1000 ~ "<1kb",
+    distance >=1000 & distance < 10000 ~ "1-10kb",
+    distance >= 10000 & distance <=100000 ~ "10-100kb",
+    distance > 100000 ~ ">100kb"
+  )) %>%
+  group_by(factor, category) %>%
+  count()
+
+counts_per_category
+
+total_counts<- tss_distance_df %>%
+  mutate(category = case_when(
+    distance < 1000 ~ "<1kb",
+    distance >=1000 & distance < 10000 ~ "1-10kb",
+    distance >= 10000 & distance <=100000 ~ "10-100kb",
+    distance > 100000 ~ ">100kb"
+  )) %>%
+  count(factor, name = "total")
+
+total_counts
+```
+
+```{r}
+merged_df<- left_join(counts_per_category, total_counts)
+merged_df %>%
+  mutate(Percentage = n/total * 100) %>%
+  ggplot(aes(x= factor, y = Percentage, fill = category)) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(
+    title = "Distance to TSS",
+    x = "Group",
+    y = "Percentage"
+  ) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_classic(base_size = 14)
+
+```
+
+You can customize the color and reorder the category as you want.
+
+```{r}
+
+merged_df$category<- factor(merged_df$category, 
+                            levels = c("<1kb", "1-10kb", "10-100kb", ">100kb"))
+merged_df %>%
+  mutate(Percentage = n/total * 100) %>%
+  ggplot(aes(x= factor, y = Percentage, fill = category)) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(
+    title = "Distance to TSS",
+    x = "Group",
+    y = "Percentage"
+  ) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  scale_fill_manual(values = c("#EF3E2B", "#F16161", "#F59595", "#FAD1C8")) +
+  theme_classic(base_size = 14)
+```
+
+The orginal figure shows a big proportion of peaks > 100kb. This is a little surprising to me.
+
+of course, you can also use packages such as `ChIPseeker`.

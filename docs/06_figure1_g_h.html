@@ -10,9 +10,9 @@
 
 
 
-<meta name="date" content="2024-12-26" />
+<meta name="date" content="2024-12-28" />
 
-<title>Generate bigwig files and peak calling</title>
+<title>reproduce figure 1 g,h</title>
 
 <script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -358,8 +358,8 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Generate bigwig files and peak calling</h1>
-<h4 class="date">2024-12-26</h4>
+<h1 class="title toc-ignore">reproduce figure 1 g,h</h1>
+<h4 class="date">2024-12-28</h4>
 
 </div>
 
@@ -388,7 +388,7 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-12-28
+<strong>Last updated:</strong> 2024-12-29
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -427,10 +427,10 @@ changes </a>
 <div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown file has unstaged changes. To know which version of
-the R Markdown file created these results, you’ll want to first commit
-it to the Git repo. If you’re still working on the analysis, you can
-ignore this warning. When you’re finished, you can run
+<p>The R Markdown is untracked by Git. To know which version of the R
+Markdown file created these results, you’ll want to first commit it to
+the Git repo. If you’re still working on the analysis, you can ignore
+this warning. When you’re finished, you can run
 <code>wflow_publish</code> to commit the R Markdown file and build the
 HTML.</p>
 </div>
@@ -560,11 +560,14 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    analysis/.DS_Store
     Ignored:    data/fastq/
+    Ignored:    data/public_data/
     Ignored:    data/reference/
 
 Untracked files:
     Untracked:  analysis/04_figure1_a_b_c.Rmd
     Untracked:  analysis/05_figure1_d_f.Rmd
+    Untracked:  analysis/06_figure1_g_h.Rmd
+    Untracked:  analysis/07_figure1_i_j_k.Rmd
 
 Unstaged changes:
     Modified:   .gitignore
@@ -587,288 +590,276 @@ have uncommitted changes.
 </div>
 <div id="versions" class="tab-pane fade">
 <p>
-These are the previous versions of the repository in which changes were
-made to the R Markdown (<code>analysis/03_generate_bigwig.Rmd</code>)
-and HTML (<code>docs/03_generate_bigwig.html</code>) files. If you’ve
-configured a remote Git repository (see <code>?wflow_git_remote</code>),
-click on the hyperlinks in the table below to view the files as they
-were in that past version.
+There are no past versions. Publish this analysis with
+<code>wflow_publish()</code> to start tracking its development.
 </p>
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-File
-</th>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-<th>
-Message
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures/blob/fb4fce6f09b04d3b84fa8c1d02093800a1cf22a3/analysis/03_generate_bigwig.Rmd" target="_blank">fb4fce6</a>
-</td>
-<td>
-crazyhottommy
-</td>
-<td>
-2024-12-27
-</td>
-<td>
-preprocessing done
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/crazyhottommy/reproduce_genomics_paper_figures/fb4fce6f09b04d3b84fa8c1d02093800a1cf22a3/docs/03_generate_bigwig.html" target="_blank">fb4fce6</a>
-</td>
-<td>
-crazyhottommy
-</td>
-<td>
-2024-12-27
-</td>
-<td>
-preprocessing done
-</td>
-</tr>
-</tbody>
-</table>
-</div>
 <hr>
 </div>
 </div>
 </div>
-<div id="generate-bigwig-files" class="section level3">
-<h3>generate bigwig files</h3>
-<p>Now that we have the sorted bam file, we can generate a genome wide
-signal view as a bigwig file.</p>
-<p>A BigWig file is a binary file format commonly used in bioinformatics
-to efficiently store and visualize continuous data over genomic
-coordinates, such as read coverage or signal intensity. It is derived
-from the Wiggle (WIG) format but optimized for faster access and reduced
-file size, making it suitable for large-scale genomic data.</p>
-<p>UCSC has a detailed page explaining what is it <a
-href="https://genome.ucsc.edu/goldenpath/help/bigWig.html"
-class="uri">https://genome.ucsc.edu/goldenpath/help/bigWig.html</a></p>
-<p>Bonus: Bioinformatics is nortorious about different file formats.
-read <a href="https://genome.ucsc.edu/FAQ/FAQformat.html"
-class="uri">https://genome.ucsc.edu/FAQ/FAQformat.html</a> for various
-formats definitions</p>
-<p>For this purpose, we will use deeptools <a
-href="https://deeptools.readthedocs.io/en/develop/content/example_usage.html"
-class="uri">https://deeptools.readthedocs.io/en/develop/content/example_usage.html</a></p>
-<p>deeptools is very versatile and it has many <a
-href="https://deeptools.readthedocs.io/en/develop/content/list_of_tools.html">sub-commands</a>.</p>
-<p>We will use <a
-href="https://deeptools.readthedocs.io/en/develop/content/tools/bamCoverage.html">bamCoverage</a>
-to generate bigwig files.</p>
-<pre class="bash"><code># install it via conda if you do not have it yet
-conda install -c conda-forge -c bioconda deeptools
-# or 
-pip install deeptools
-</code></pre>
-<p>I really like the demonstration of how coverage files are computed by
-the deeptools <a
-href="https://docs.google.com/file/d/0B8DPnFM4SLr2UjdYNkQ0dElEMm8/edit?resourcekey=0-7YZ1j0PIefw22P18GFlUjg">authors</a>.</p>
-<p><img src="imgs/bam2bigwig1.png" /> <img
-src="imgs/bam2bigwig2.png" /></p>
-<p><img src="imgs/bam2bigwig3.png" /></p>
+<p>Let’s re-create figure 1 g,h!</p>
+<p><img src="imgs/figgh.png" /></p>
+<div id="figure-1g" class="section level3">
+<h3>Figure 1g</h3>
+<p>Figure 1g is an <a href="https://igv.org/"><code>IGV</code></a> track
+view. We already generated the bigwig files and we can easily load them
+to IGV and take a screenshot.</p>
+<p>Below is one of the known YAP1 target gene CCN2:</p>
+<p><img src="imgs/ccn2.png" /></p>
+<p>The paper also shows H3K4me1, H3K4me3 and H3K27ac tracks which the
+author analyzed from a <a
+href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE49651">previous
+dataset</a> for MDA-MB-231 breast cancer cell line.</p>
+<p>I will leave the analysis from the raw fastq files as an exercise for
+you.</p>
+</div>
+<div id="plot-the-tracks-from-scratch" class="section level3">
+<h3>plot the tracks from scratch</h3>
+<p>If you look carefully, the genome track view for the bigwig files is
+just a histogram.</p>
+<p>If you want to plot the bigwig signal tracks:</p>
 <ul>
-<li><p>RPKM: reads per kilobase per million reads The formula is: RPKM
-(per bin) = number of reads per bin /(number of mapped reads (in
-millions) * bin length (kp))</p></li>
-<li><p>RPGC: reads per genomic content used to normalize reads to 1x
-depth of coverage sequencing depth is defined as: (total number of
-mapped reads * fragment length) / effective genome size</p></li>
+<li><p>take a look at <a
+href="https://phanstiellab.github.io/plotgardener/articles/guides/plotting_multiomic_data.html">plotgardner</a>
+bioconductor package.</p></li>
+<li><p><a
+href="https://bioconductor.org/packages/release/bioc/html/karyoploteR.html">karyoploteR</a>
+I used for my <a
+href="https://github.com/crazyhottommy/scATACutils">scATACutils
+package</a> for plotting <a
+href="https://rpubs.com/crazyhottommy/scATAC_tracks">scATACseq
+tracks</a>.</p></li>
+<li><p><a
+href="https://bioconductor.org/packages/devel/bioc/vignettes/Gviz/inst/doc/Gviz.html">Gviz</a></p></li>
+<li><p><a
+href="https://www.bioconductor.org/packages/release/bioc/html/ggbio.html">ggbio</a></p></li>
+<li><p><a
+href="https://github.com/deeptools/pyGenomeTracks">pyGenometracks</a> in
+<code>python</code>.</p></li>
 </ul>
-<pre class="bash"><code>cd data/fastq
-bamCoverage --bam YAP.sorted.bam --normalizeUsing RPKM --extendReads 200 -o YAP1.bw</code></pre>
-<p>Read <a
-href="https://github.com/crazyhottommy/ChIP-seq-analysis/blob/master/part1.2_convert_bam2_bigwig.md">here</a>
-to understand why you need to extend the reads to 200 bp. We only
-sequenced 50bp of the DNA after antibody pull-down, but the real DNA is
-about 200 bp (the size of the DNA after sonication/fragmentation)</p>
-<p>We used default bin size 50 bp.</p>
-<div id="generate-bigwig-files-for-all-samples" class="section level4">
-<h4>Generate bigwig files for all samples</h4>
-<pre class="bash"><code>for bam in *sorted.bam
-do
-  bamCoverage --bam $bam --normalizeUsing RPKM --extendReads 200 -o ${bam/sorted.bam/bw}
-done</code></pre>
 </div>
-</div>
-<div id="peak-calling" class="section level3">
-<h3>peak calling</h3>
-<p><a
-href="https://genomebiology.biomedcentral.com/articles/10.1186/gb-2008-9-9-r137"><code>MACS</code></a>
-is the most popular peak caller for ChIPseq. It is maintained by Tao
-Liu. I had the pleasure working with him on some single-cell ATACseq
-stuff when I was in Shirley Liu’s lab.</p>
-<p>MACS is now MACS3! <a
-href="https://macs3-project.github.io/MACS/docs/INSTALL.html"
-class="uri">https://macs3-project.github.io/MACS/docs/INSTALL.html</a></p>
-<pre class="bash"><code>pip install --upgrade macs3</code></pre>
-<p>The MACS3 callpeak subcommands have many paramters and you want to
-read <a href="https://macs3-project.github.io/MACS/docs/callpeak.html"
-class="uri">https://macs3-project.github.io/MACS/docs/callpeak.html</a></p>
-<pre class="bash"><code>macs3 callpeak -t YAP.sorted.bam -c IgG.sorted.bam -f BAM -n YAP -g hs --outdir YAP_peak</code></pre>
-<p>It takes a couple of minutes. output:</p>
-<pre class="bash"><code>ls YAP_peak/
-YAP1_model.r          YAP1_peaks.narrowPeak YAP1_peaks.xls        YAP1_summits.bed</code></pre>
-<p>Do it for all samples.</p>
-<pre class="bash"><code>for bam in *sorted.bam
-do
-  if [[ &quot;$bam&quot; != &quot;IgG.sorted.bam&quot; ]]; then
-    echo macs3 callpeak -t $bam -c IgG.sorted.bam -f BAM -n ${bam%.sorted.bam} -g hs --outdir ${bam/.sorted.bam/_peak}
-  fi
-done
-
-macs3 callpeak -t TAZ.sorted.bam -c IgG.sorted.bam -f BAM -n TAZ -g hs --outdir TAZ_peak
-macs3 callpeak -t TEAD4.sorted.bam -c IgG.sorted.bam -f BAM -n TEAD4 -g hs --outdir TEAD4_peak
-macs3 callpeak -t YAP.sorted.bam -c IgG.sorted.bam -f BAM -n YAP -g hs --outdir YAP_peak</code></pre>
-<p>We learned something new here!</p>
-<p><code>if [[ "$bam" != "IgG.bam" ]]; then:</code> Checks if the
-current file is not IgG.bam.</p>
-<p>remove the “echo” and run it:</p>
-<pre class="bash"><code>for bam in *sorted.bam
-do
-  if [[ &quot;$bam&quot; != &quot;IgG.sorted.bam&quot; ]]; then
-    macs3 callpeak -t $bam -c IgG.sorted.bam -f BAM -n ${bam%.sorted.bam} -g hs --outdir ${bam/.sorted.bam/_peak}
-  fi
-done</code></pre>
-<p>How many peaks we get for each transcription factor?</p>
-<pre class="bash"><code>find . -name &quot;*Peak&quot;  | xargs wc -l
-   11512 ./TEAD4_peak/TEAD4_peaks.narrowPeak
-   10719 ./TAZ_peak/TAZ_peaks.narrowPeak
-    9807 ./YAP_peak/YAP_peaks.narrowPeak
-   32038 total</code></pre>
-<p>According to the manual page:</p>
-<blockquote>
-<p>NAME_peaks.narrowPeak is BED6+4 format file which contains the peak
-locations together with peak summit, p-value, and q-value. If you plan
-to load it to the UCSC genome browser, please make sure that you turn on
-–trackline option. Definition of some specific columns are:</p>
-</blockquote>
-<blockquote>
-<p>5th: integer score for display. It’s calculated as
-int(-10<em>log10pvalue) or int(-10</em>log10qvalue) depending on whether
--p (pvalue) or -q (qvalue) is used as score cutoff. Please note that
-currently this value might be out of the [0-1000] range defined in UCSC
-ENCODE narrowPeak format. You can let the value saturated at 1000
-(i.e. p/q-value = 10^-100) by using the following 1-liner awk: awk -v
-OFS=“ ‘{$5=$5&gt;1000?1000:$5} {print}’ NAME_peaks.narrowPeak</p>
-</blockquote>
-<blockquote>
-<p>7th: fold-change at peak summit</p>
-</blockquote>
-<blockquote>
-<p>8th: -log10pvalue at peak summit</p>
-</blockquote>
-<blockquote>
-<p>9th: -log10qvalue at peak summit</p>
-</blockquote>
-<blockquote>
-<p>10th: relative summit position to peak start</p>
-</blockquote>
-<div id="what-is-model-building-in-macs" class="section level4">
-<h4>What is Model Building in MACS?</h4>
-<p>Model building in MACS (Model-Based Analysis of ChIP-Seq) is a step
-that attempts to determine the average fragment size of DNA fragments
-from sequencing data. It uses the shifted positions of the tags (forward
-and reverse reads) to estimate the peak signal. The estimated fragment
-size is then used to build a model of the peak shape, which is important
-for identifying and refining peak regions.</p>
-</div>
-<div id="model-building-single-end-vs.-paired-end"
-class="section level4">
-<h4>Model Building: Single-End vs. Paired-End</h4>
+<div id="figure-1h" class="section level3">
+<h3>Figure 1h</h3>
+<p>Figure 1h is a pie chart showing the proportion of the annotation of
+the YAP/TAZ/TEAD4 common peaks. The annotations are: promoters, active
+enhancers, inactive enhancers and not classified.</p>
 <ul>
-<li>Single-End Data:</li>
+<li>promoters are YAP/TAZ/TEAD4 peaks overlapping with H3K4me3
+peaks</li>
+<li>active enhancers are YAP/TAZ/TEAD4 peaks overlapping with H3K4me1
+and H3K27ac peaks</li>
+<li>inactive enhancers are YAP/TAZ/TEAD4 peaks overlapping with H3K4me1
+but not H3K37ac peaks</li>
 </ul>
-<p>Model building is used because the fragment size is not directly
-available from single-end reads. MACS shifts the reads by half the
-estimated fragment size to align them to the putative binding sites.</p>
-<ul>
-<li>Paired-End Data:</li>
-</ul>
-<p>Model building is usually not needed because the fragment size is
-directly available from the paired-end read alignment. In paired-end
-mode, MACS calculates the actual insert size between read pairs,
-bypassing the need for model building.</p>
-</div>
-<div id="when-to-use-no-model-and-extend-size" class="section level4">
-<h4>When to Use –no-model and –extend-size</h4>
-<p>For single-end data, you might use –no-model and –extend-size in
-specific scenarios where you want to skip model building and manually
-specify the fragment size:</p>
-<p>–no-model:</p>
-<p>Disables the model building step. Use this option if you already know
-the approximate fragment size from your library preparation.</p>
-<p>–extend-size:</p>
-<p>Extends reads to the specified fragment size (e.g., 200 bp). This
-mimics the actual fragment length in the absence of paired-end
-information.</p>
-</div>
-<div id="best-practices-for-single-end-data" class="section level4">
-<h4>Best Practices for Single-End Data</h4>
-<ul>
-<li>With Model Building (Default Behavior):</li>
-</ul>
-<p>Let MACS build the model unless there are specific reasons to disable
-it.</p>
-<p>macs2 callpeak -t treatment.bam -c control.bam -f BED -g hs -n sample
-–outdir results</p>
-<ul>
-<li>Without Model Building (–no-model):</li>
-</ul>
-<p>Use when: You know the fragment size (e.g., from library preparation
-or empirical testing). The library is not suitable for accurate model
-building (e.g., very low read depth or noisy data). Specify –extend-size
-to set the fragment size.</p>
-<p><code>macs2 callpeak -t treatment.bam -c control.bam -f BED -g hs -n sample --outdir results --no-model --extend-size 200</code></p>
-</div>
-</div>
-<div id="why-use-no-model-and-extend-size-for-single-end"
-class="section level3">
-<h3>Why Use –no-model and –extend-size for Single-End?</h3>
-<p>Consistency: You can ensure the fragment size is consistently applied
-across all datasets. Noise Reduction: Avoid errors from noisy or
-low-quality data affecting model estimation. Speed: Skipping model
-building can make peak calling faster.</p>
-<p>Model building is relevant for single-end data and used by default
-unless –no-model is specified. For paired-end data, model building is
-typically unnecessary since the fragment size is directly calculated.
-Use –no-model –extend-size <size> for single-end data when you want to
-bypass model building and directly set the fragment size.</p>
-</div>
-<div id="challenges" class="section level3">
-<h3>Challenges</h3>
-<p>The paper uses a previous generated ChIP-seq dataset <a
+<p>Read this <a
+href="https://www.cell.com/cell/fulltext/S0092-8674(07)00600-9">classic
+ChIP-seq paper</a> from Keji Zhao’s group to understand what genomic
+features those histone modifications are associated with.</p>
+<p>To do this, I will download the H3K4me1, H3K4me3 and H3K27ac peaks
+from <a
 href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE49651"
-class="uri">https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE49651</a>
-for H3K4me1, H3K4me3 and H3K27ac. The authors used H3K4me1 to define
-enhancers and H3K4me3 to define promoters. H3K4me1/H3K27ac to define
-active enhancers and H3K4me3/H3K27ac to define active promoters.</p>
-<p>Can you process the data yourself?</p>
+class="uri">https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE49651</a>.</p>
+<p><img src="imgs/GEO.png" /></p>
+<p>click the <code>ftp</code> or <code>http</code> in the link above,
+and you will download the <code>peaks.txt.gz</code> files.</p>
+<p>Note, the data were aligned to hg19 human genome. We did our
+alignment using hg38 genome. We will need to lift-over the hg19 peak
+files to hg38 version.</p>
+<pre class="bash"><code>ls data/public_data
+
+GSE49651_MDAMB231.H3K27Ac.hg19.all.MACS.1e-5_peaks.txt.gz GSE49651_MDAMB231.H3K4me3.hg19.ALL.MACS.1e-5_peaks.txt.gz
+GSE49651_MDAMB231.H3K4me1.hg19.all.MACS.1e-5_peaks.txt.gz
+</code></pre>
+<p>Download the chain file from UCSC <a
+href="https://hgdownload.soe.ucsc.edu/goldenpath/hg19/liftOver/"
+class="uri">https://hgdownload.soe.ucsc.edu/goldenpath/hg19/liftOver/</a>
+and the command line tool from <a
+href="https://hgdownload.soe.ucsc.edu/admin/exe/"
+class="uri">https://hgdownload.soe.ucsc.edu/admin/exe/</a></p>
+<pre class="bash"><code>curl -O https://hgdownload.soe.ucsc.edu/goldenpath/hg19/liftOver/hg19ToHg38.over.chain.gz
+
+# I am using a macs with arm64 system
+curl -O https://hgdownload.soe.ucsc.edu/admin/exe/macOSX.arm64/liftOver
+
+# make it executable
+chmod u+x liftOver</code></pre>
+<p>Now, we are ready to lift-over the coordinates from hg19 to hg38:</p>
+<pre class="bash"><code>./liftOver GSE49651_MDAMB231.H3K27Ac.hg19.all.MACS.1e-5_peaks.txt.gz hg19ToHg38.over.chain.gz H3K27ac.bed unmapped1.bed
+
+./liftOver GSE49651_MDAMB231.H3K4me3.hg19.ALL.MACS.1e-5_peaks.txt.gz hg19ToHg38.over.chain.gz H3K4me3.bed unmapped2.bed
+
+./liftOver GSE49651_MDAMB231.H3K4me1.hg19.all.MACS.1e-5_peaks.txt.gz hg19ToHg38.over.chain.gz H3K4me1.bed unmapped3.bed
+
+# how many peaks after the liftover
+ wc -l *bed
+   37480 H3K27ac.bed
+   26765 H3K4me1.bed
+   17991 H3K4me3.bed
+      30 unmapped1.bed
+      56 unmapped2.bed
+      12 unmapped3.bed</code></pre>
+<p>Again, we can use <code>bedtools</code> to do all those intersections
+and annotate the YAP1/TAZ/TEAD4 peaks. I will keep everything in R
+instead:</p>
+<pre class="r"><code>library(rtracklayer) # for reading in bed file
+library(here)
+library(dplyr)
+library(ggplot2)
+
+TAZ_peaks&lt;- import(here(&quot;data/fastq/TAZ_peak/TAZ_peaks.narrowPeak&quot;))
+YAP_peaks&lt;- import(here(&quot;data/fastq/YAP_peak/YAP_peaks.narrowPeak&quot;))
+TEAD4_peak&lt;- import(here(&quot;data/fastq/TEAD4_peak/TEAD4_peaks.narrowPeak&quot;))
+
+YAP_overlap_TAZ_peaks&lt;- subsetByOverlaps(YAP_peaks, TAZ_peaks)
+
+YAP_overlap_TAZ_peaks_overlap_TEAD4&lt;- subsetByOverlaps(YAP_overlap_TAZ_peaks, TEAD4_peak)
+YAP_overlap_TAZ_peaks_overlap_TEAD4</code></pre>
+<pre><code>#&gt; GRanges object with 5965 ranges and 6 metadata columns:
+#&gt;          seqnames              ranges strand |          name     score
+#&gt;             &lt;Rle&gt;           &lt;IRanges&gt;  &lt;Rle&gt; |   &lt;character&gt; &lt;numeric&gt;
+#&gt;      [1]     chr1     1024628-1025059      * |    YAP_peak_3       494
+#&gt;      [2]     chr1     1264837-1265155      * |    YAP_peak_4       148
+#&gt;      [3]     chr1     1265320-1265695      * |    YAP_peak_5       131
+#&gt;      [4]     chr1     1360618-1360955      * |    YAP_peak_6       306
+#&gt;      [5]     chr1     1659298-1659586      * |    YAP_peak_8        45
+#&gt;      ...      ...                 ...    ... .           ...       ...
+#&gt;   [5961]     chrX 154368850-154369243      * | YAP_peak_9801        90
+#&gt;   [5962]     chrX 154596614-154596846      * | YAP_peak_9802       120
+#&gt;   [5963]     chrX 154600351-154600918      * | YAP_peak_9803       131
+#&gt;   [5964]     chrX 154732680-154732891      * | YAP_peak_9804        58
+#&gt;   [5965]     chrX 155888248-155888487      * | YAP_peak_9806       108
+#&gt;          signalValue    pValue    qValue      peak
+#&gt;            &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt; &lt;integer&gt;
+#&gt;      [1]    16.37320   54.3883  49.46070       192
+#&gt;      [2]     8.81841   18.8472  14.89750       188
+#&gt;      [3]     8.62413   17.0083  13.14010       112
+#&gt;      [4]    14.37360   35.1297  30.64260       148
+#&gt;      [5]     5.06808    7.8940   4.58709       102
+#&gt;      ...         ...       ...       ...       ...
+#&gt;   [5961]     6.13997  12.64820   9.00333       237
+#&gt;   [5962]     8.21346  15.84150  12.02720       128
+#&gt;   [5963]     8.62413  17.00830  13.14010       417
+#&gt;   [5964]     5.74942   9.32421   5.89513        78
+#&gt;   [5965]     6.72473  14.58900  10.84320       151
+#&gt;   -------
+#&gt;   seqinfo: 27 sequences from an unspecified genome; no seqlengths</code></pre>
+<p>read in the histone modification peaks:</p>
+<pre class="r"><code>H3K4me1&lt;- import(here(&quot;data/public_data/H3K4me1.bed&quot;))
+H3K4me3&lt;- import(here(&quot;data/public_data/H3K4me3.bed&quot;))
+H3K27ac&lt;- import(here(&quot;data/public_data/H3K27ac.bed&quot;))</code></pre>
+<p>From the method section:</p>
+<blockquote>
+<p>The presence of H3K4me1 and H3K4me3 peaks, their genomic locations
+and their overlap were the criteria used to define promoters and
+enhancers: i) H3K4me3 peaks not overlapping with H3K4me1 peaks and close
+to a TSS (± 5kb) were defined as promoters, as NA otherwise; ii) H3K4me1
+peaks not overlapping with H3K4me3 peaks were defined as enhancers; iii)
+regions with the co-presence of H3K4me1 and H3K4me3 peaks were visually
+inspected on IGV and were defined as promoters, enhancers or NA after
+the evaluation of the proximity to a TSS and the comparison of the
+enrichment signals. Finally, promoters or enhancers were defined as
+active if overlapping with H3K27ac peaks.</p>
+</blockquote>
+<p>Define (in)active enhancers:</p>
+<pre class="r"><code>active_enhancers&lt;- subsetByOverlaps(H3K4me1, H3K27ac)
+inactive_enhancers&lt;- subsetByOverlaps(H3K4me1, H3K27ac, invert=TRUE)
+
+promoters&lt;- subsetByOverlaps(H3K4me3, H3K4me1, invert=TRUE)</code></pre>
+<blockquote>
+<p>YAP/TAZ/TEAD peaks annotation YAP/TAZ/TEAD peaks were annotated as
+promoters or enhancers if their summit was overlapping with promoter or
+enhancer regions as defined above. Peaks with the summit falling in
+regions with no H3K4me1 or H3K4me3 peaks, or in NA regions were defined
+as “not assigned” and discarded from subsequent analyses.</p>
+</blockquote>
+<pre class="r"><code>n_active_enhancers&lt;- subsetByOverlaps(YAP_overlap_TAZ_peaks_overlap_TEAD4,
+                                      active_enhancers) %&gt;%
+  length()
+
+n_inactive_enhancers&lt;- subsetByOverlaps(YAP_overlap_TAZ_peaks_overlap_TEAD4,
+                                        inactive_enhancers) %&gt;%
+  length()
+
+n_promoters&lt;- subsetByOverlaps(YAP_overlap_TAZ_peaks_overlap_TEAD4, 
+                               promoters) %&gt;%
+  length()
+
+n_unclassified&lt;- length(YAP_overlap_TAZ_peaks_overlap_TEAD4) - n_active_enhancers -
+  n_inactive_enhancers - n_promoters</code></pre>
+<p>Put the numbers in a dataframe:</p>
+<pre class="r"><code>annotation_df&lt;- data.frame(category = c(&quot;active_enhancers&quot;, &quot;inactive_enhancers&quot;,
+                        &quot;promoters&quot;, &quot;unclassified&quot;),
+peak_number = c(n_active_enhancers, n_inactive_enhancers, 
+                n_promoters, n_unclassified))
+
+
+annotation_df</code></pre>
+<pre><code>#&gt;             category peak_number
+#&gt; 1   active_enhancers        3972
+#&gt; 2 inactive_enhancers         118
+#&gt; 3          promoters         274
+#&gt; 4       unclassified        1601</code></pre>
+<p>Let’s plot a pie chart!</p>
+<pre class="r"><code>library(ggplot2)
+
+ggplot(annotation_df, aes(x = &quot;&quot;, y = peak_number, fill = category)) +
+  geom_bar(stat = &quot;identity&quot;, width = 1) +
+  coord_polar(&quot;y&quot;, start = 0) +
+  theme_void() + # Remove unnecessary axes
+  labs(title = &quot;YAP/TAZ/TEAD4 peaks&quot;) +
+  scale_fill_brewer(palette = &quot;Set3&quot;) </code></pre>
+<p><img src="figure/06_figure1_g_h.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>change the order of the categories by changing the factor level</p>
+<pre class="r"><code>annotation_df$category&lt;- factor(annotation_df$category, 
+                                levels = c(&quot;promoters&quot;, &quot;active_enhancers&quot;,
+                                           &quot;inactive_enhancers&quot;, &quot;unclassified&quot;))
+
+colors&lt;- c(&quot;#8D1E0F&quot;, &quot;#F57D2B&quot;, &quot;#FADAC4&quot;, &quot;#D4DADA&quot;)
+
+ggplot(annotation_df, aes(x = &quot;&quot;, y = peak_number, fill = category)) +
+  geom_bar(stat = &quot;identity&quot;, width = 1) +
+  coord_polar(&quot;y&quot;, start = 0) +
+  theme_void() + # Remove unnecessary axes
+  labs(title = &quot;YAP/TAZ/TEAD4 peaks&quot;) +
+  scale_fill_manual(values = colors)</code></pre>
+<p><img src="figure/06_figure1_g_h.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" />
+Note, the authors re-called the peaks using their own IgG sample:</p>
+<blockquote>
+<p>Peak calls and read density tracks were generated using SPP version
+1.1148 with default parameters and using as control sample the IgG
+ChIP-seq data generated in our laboratory because of the low sequencing
+depth of the Input DNA contained in SRP028597.</p>
+</blockquote>
+<p>This can cause drastically different number of H3K4me1/3 and H3K27ac
+peaks. It is not surprising to me that we now have a lot of unclassified
+peaks.</p>
+<div id="add-the-percentage-to-the-pie-chart" class="section level4">
+<h4>Add the percentage to the pie chart</h4>
+<pre class="r"><code># Calculate percentages and cumulative positions for labeling
+annotation_df &lt;- annotation_df %&gt;%
+  dplyr::mutate(
+    percentage = peak_number / sum(peak_number) * 100,
+    label = paste0(round(percentage, 1), &quot;%&quot;)
+  )
+
+annotation_df</code></pre>
+<pre><code>#&gt;             category peak_number percentage label
+#&gt; 1   active_enhancers        3972  66.588433 66.6%
+#&gt; 2 inactive_enhancers         118   1.978206    2%
+#&gt; 3          promoters         274   4.593462  4.6%
+#&gt; 4       unclassified        1601  26.839899 26.8%</code></pre>
+<pre class="r"><code># Create the pie chart
+ggplot(annotation_df, aes(x = &quot;&quot;, y = peak_number, fill = category)) +
+  geom_bar(stat = &quot;identity&quot;, width = 1) + 
+  coord_polar(&quot;y&quot;, start = 0) +
+  theme_void() + # Remove unnecessary axes
+  labs(title = &quot;YAP/TAZ/TEAD4 peaks&quot;) +
+  scale_fill_manual(values = colors) +
+  geom_text(aes(label = label), position = position_stack(vjust = 0.5)) # Add percentage labels</code></pre>
+<p><img src="figure/06_figure1_g_h.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Although we have a bigger proportion of unclassified peaks, the
+conclusion is the same: A large proportion of the YAP1/TAZ/TEAD4 peaks
+are located at active enhancers.</p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -878,38 +869,74 @@ Session information
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 4.4.1 (2024-06-14)
-Platform: aarch64-apple-darwin20
-Running under: macOS Sonoma 14.1
-
-Matrix products: default
-BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
-LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
-
-locale:
-[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-
-time zone: America/New_York
-tzcode source: internal
-
-attached base packages:
-[1] stats     graphics  grDevices utils     datasets  methods   base     
-
-other attached packages:
-[1] workflowr_1.7.1
-
-loaded via a namespace (and not attached):
- [1] vctrs_0.6.5       httr_1.4.7        cli_3.6.3         knitr_1.48       
- [5] rlang_1.1.4       xfun_0.46         stringi_1.8.4     processx_3.8.4   
- [9] promises_1.3.0    jsonlite_1.8.8    glue_1.7.0        rprojroot_2.0.4  
-[13] git2r_0.35.0      htmltools_0.5.8.1 httpuv_1.6.15     ps_1.7.7         
-[17] sass_0.4.9        fansi_1.0.6       rmarkdown_2.27    jquerylib_0.1.4  
-[21] tibble_3.2.1      evaluate_0.24.0   fastmap_1.2.0     yaml_2.3.10      
-[25] lifecycle_1.0.4   whisker_0.4.1     stringr_1.5.1     compiler_4.4.1   
-[29] fs_1.6.4          pkgconfig_2.0.3   Rcpp_1.0.13       rstudioapi_0.16.0
-[33] later_1.3.2       digest_0.6.36     R6_2.5.1          utf8_1.2.4       
-[37] pillar_1.9.0      callr_3.7.6       magrittr_2.0.3    bslib_0.8.0      
-[41] tools_4.4.1       cachem_1.1.0      getPass_0.2-4    </code></pre>
+<pre><code>#&gt; R version 4.4.1 (2024-06-14)
+#&gt; Platform: aarch64-apple-darwin20
+#&gt; Running under: macOS Sonoma 14.1
+#&gt; 
+#&gt; Matrix products: default
+#&gt; BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
+#&gt; LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+#&gt; 
+#&gt; locale:
+#&gt; [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+#&gt; 
+#&gt; time zone: America/New_York
+#&gt; tzcode source: internal
+#&gt; 
+#&gt; attached base packages:
+#&gt; [1] stats4    stats     graphics  grDevices utils     datasets  methods  
+#&gt; [8] base     
+#&gt; 
+#&gt; other attached packages:
+#&gt;  [1] ggplot2_3.5.1        dplyr_1.1.4          here_1.0.1          
+#&gt;  [4] rtracklayer_1.64.0   GenomicRanges_1.56.1 GenomeInfoDb_1.40.1 
+#&gt;  [7] IRanges_2.38.1       S4Vectors_0.42.1     BiocGenerics_0.50.0 
+#&gt; [10] workflowr_1.7.1     
+#&gt; 
+#&gt; loaded via a namespace (and not attached):
+#&gt;  [1] tidyselect_1.2.1            farver_2.1.2               
+#&gt;  [3] Biostrings_2.72.1           bitops_1.0-8               
+#&gt;  [5] fastmap_1.2.0               RCurl_1.98-1.16            
+#&gt;  [7] GenomicAlignments_1.40.0    promises_1.3.0             
+#&gt;  [9] XML_3.99-0.17               digest_0.6.36              
+#&gt; [11] lifecycle_1.0.4             processx_3.8.4             
+#&gt; [13] magrittr_2.0.3              compiler_4.4.1             
+#&gt; [15] rlang_1.1.4                 sass_0.4.9                 
+#&gt; [17] tools_4.4.1                 utf8_1.2.4                 
+#&gt; [19] yaml_2.3.10                 knitr_1.48                 
+#&gt; [21] S4Arrays_1.4.1              labeling_0.4.3             
+#&gt; [23] curl_5.2.1                  DelayedArray_0.30.1        
+#&gt; [25] RColorBrewer_1.1-3          abind_1.4-5                
+#&gt; [27] BiocParallel_1.38.0         withr_3.0.0                
+#&gt; [29] grid_4.4.1                  fansi_1.0.6                
+#&gt; [31] git2r_0.35.0                colorspace_2.1-1           
+#&gt; [33] scales_1.3.0                SummarizedExperiment_1.34.0
+#&gt; [35] cli_3.6.3                   rmarkdown_2.27             
+#&gt; [37] crayon_1.5.3                generics_0.1.3             
+#&gt; [39] rstudioapi_0.16.0           httr_1.4.7                 
+#&gt; [41] rjson_0.2.22                cachem_1.1.0               
+#&gt; [43] stringr_1.5.1               zlibbioc_1.50.0            
+#&gt; [45] parallel_4.4.1              XVector_0.44.0             
+#&gt; [47] restfulr_0.0.15             matrixStats_1.3.0          
+#&gt; [49] vctrs_0.6.5                 Matrix_1.7-0               
+#&gt; [51] jsonlite_1.8.8              callr_3.7.6                
+#&gt; [53] jquerylib_0.1.4             glue_1.7.0                 
+#&gt; [55] codetools_0.2-20            ps_1.7.7                   
+#&gt; [57] stringi_1.8.4               gtable_0.3.5               
+#&gt; [59] later_1.3.2                 BiocIO_1.14.0              
+#&gt; [61] UCSC.utils_1.0.0            munsell_0.5.1              
+#&gt; [63] tibble_3.2.1                pillar_1.9.0               
+#&gt; [65] htmltools_0.5.8.1           GenomeInfoDbData_1.2.12    
+#&gt; [67] R6_2.5.1                    rprojroot_2.0.4            
+#&gt; [69] evaluate_0.24.0             Biobase_2.64.0             
+#&gt; [71] lattice_0.22-6              highr_0.11                 
+#&gt; [73] Rsamtools_2.20.0            httpuv_1.6.15              
+#&gt; [75] bslib_0.8.0                 Rcpp_1.0.13                
+#&gt; [77] SparseArray_1.4.8           whisker_0.4.1              
+#&gt; [79] xfun_0.46                   fs_1.6.4                   
+#&gt; [81] MatrixGenerics_1.16.0       getPass_0.2-4              
+#&gt; [83] pkgconfig_2.0.3</code></pre>
+</div>
 </div>
 </div>
 </div>

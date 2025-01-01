@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2024-12-28" />
+
+<title>reproduce figure 1 d f</title>
+
+<script src="site_libs/header-attrs-2.27/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">chatomics:Reproduce genomics paper figures</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">reproduce figure 1 d f</h1>
+<h4 class="date">2024-12-28</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2024-12-30
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 1
+</p>
+<p>
+<strong>Knit directory:</strong>
+<code>reproduce_genomics_paper_figures/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.1). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges">
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted
+changes </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguncommittedchanges"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The R Markdown is untracked by Git. To know which version of the R
+Markdown file created these results, you’ll want to first commit it to
+the Git repo. If you’re still working on the analysis, you can ignore
+this warning. When you’re finished, you can run
+<code>wflow_publish</code> to commit the R Markdown file and build the
+HTML.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20241226code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20241226)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20241226code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20241226)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomcrazyhottommyreproducegenomicspaperfigurestreed2e0e8aea9bd22bcb74c74dbbfe5ade42f9f4707targetblankd2e0e8aa">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures/tree/d2e0e8aea9bd22bcb74c74dbbfe5ade42f9f4707" target="_blank">d2e0e8a</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomcrazyhottommyreproducegenomicspaperfigurestreed2e0e8aea9bd22bcb74c74dbbfe5ade42f9f4707targetblankd2e0e8aa"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures/tree/d2e0e8aea9bd22bcb74c74dbbfe5ade42f9f4707" target="_blank">d2e0e8a</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rproj.user/
+    Ignored:    analysis/.DS_Store
+    Ignored:    data/fastq/
+    Ignored:    data/public_data/
+    Ignored:    data/reference/
+
+Untracked files:
+    Untracked:  analysis/04_figure1_a_b_c.Rmd
+    Untracked:  analysis/05_figure1_d_f.Rmd
+    Untracked:  analysis/06_figure1_g_h.Rmd
+    Untracked:  analysis/07_figure1_i_j_k.Rmd
+    Untracked:  analysis/08_homework.Rmd
+
+Unstaged changes:
+    Modified:   .gitignore
+    Modified:   README.md
+    Modified:   analysis/03_generate_bigwig.Rmd
+    Modified:   analysis/index.Rmd
+    Modified:   reproduce_genomics_paper_figures.Rproj
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+There are no past versions. Publish this analysis with
+<code>wflow_publish()</code> to start tracking its development.
+</p>
+<hr>
+</div>
+</div>
+</div>
+<p>Now, let’s re-create figure 1 d and f.</p>
+<p><img src="imgs/figdef.png" /></p>
+<div id="figure-1d" class="section level3">
+<h3>Figure 1d</h3>
+<p>Look at figure 1d, it is a scatter plot. what do we need?</p>
+<ul>
+<li>we need the YAP, TAZ, and TEAD4 signal. This is the number of
+sequencing reads</li>
+<li>x-axis: TEAD4 signal</li>
+<li>y-axis: YAP1 signal</li>
+</ul>
+<p>From the figure description:</p>
+<blockquote>
+<ol start="4" style="list-style-type: lower-alpha">
+<li>Linear correlation between the signal of YAP or TAZ and TEAD4 peaks
+in the 5522 shared binding sites. r2 is the coefficients of
+determination of the two correlations.</li>
+</ol>
+</blockquote>
+<p>Read in the peak files:</p>
+<pre class="r"><code>library(GenomicRanges)
+library(rtracklayer) # for reading in bed file
+library(here)
+library(dplyr)
+library(ggplot2)
+
+TAZ_peaks&lt;- import(here(&quot;data/fastq/TAZ_peak/TAZ_peaks.narrowPeak&quot;))
+YAP_peaks&lt;- import(here(&quot;data/fastq/YAP_peak/YAP_peaks.narrowPeak&quot;))
+TEAD4_peak&lt;- import(here(&quot;data/fastq/TEAD4_peak/TEAD4_peaks.narrowPeak&quot;))
+
+YAP_overlap_TAZ_peaks&lt;- subsetByOverlaps(YAP_peaks, TAZ_peaks)
+
+YAP_overlap_TAZ_peaks_overlap_TEAD4&lt;- subsetByOverlaps(YAP_overlap_TAZ_peaks, TEAD4_peak)
+YAP_overlap_TAZ_peaks_overlap_TEAD4</code></pre>
+<pre><code>#&gt; GRanges object with 5965 ranges and 6 metadata columns:
+#&gt;          seqnames              ranges strand |          name     score
+#&gt;             &lt;Rle&gt;           &lt;IRanges&gt;  &lt;Rle&gt; |   &lt;character&gt; &lt;numeric&gt;
+#&gt;      [1]     chr1     1024628-1025059      * |    YAP_peak_3       494
+#&gt;      [2]     chr1     1264837-1265155      * |    YAP_peak_4       148
+#&gt;      [3]     chr1     1265320-1265695      * |    YAP_peak_5       131
+#&gt;      [4]     chr1     1360618-1360955      * |    YAP_peak_6       306
+#&gt;      [5]     chr1     1659298-1659586      * |    YAP_peak_8        45
+#&gt;      ...      ...                 ...    ... .           ...       ...
+#&gt;   [5961]     chrX 154368850-154369243      * | YAP_peak_9801        90
+#&gt;   [5962]     chrX 154596614-154596846      * | YAP_peak_9802       120
+#&gt;   [5963]     chrX 154600351-154600918      * | YAP_peak_9803       131
+#&gt;   [5964]     chrX 154732680-154732891      * | YAP_peak_9804        58
+#&gt;   [5965]     chrX 155888248-155888487      * | YAP_peak_9806       108
+#&gt;          signalValue    pValue    qValue      peak
+#&gt;            &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt; &lt;integer&gt;
+#&gt;      [1]    16.37320   54.3883  49.46070       192
+#&gt;      [2]     8.81841   18.8472  14.89750       188
+#&gt;      [3]     8.62413   17.0083  13.14010       112
+#&gt;      [4]    14.37360   35.1297  30.64260       148
+#&gt;      [5]     5.06808    7.8940   4.58709       102
+#&gt;      ...         ...       ...       ...       ...
+#&gt;   [5961]     6.13997  12.64820   9.00333       237
+#&gt;   [5962]     8.21346  15.84150  12.02720       128
+#&gt;   [5963]     8.62413  17.00830  13.14010       417
+#&gt;   [5964]     5.74942   9.32421   5.89513        78
+#&gt;   [5965]     6.72473  14.58900  10.84320       151
+#&gt;   -------
+#&gt;   seqinfo: 27 sequences from an unspecified genome; no seqlengths</code></pre>
+<pre class="r"><code># use rtracklayer to write the GenomicRanges object to file
+export(YAP_overlap_TAZ_peaks_overlap_TEAD4, 
+       con = here(&quot;data/fastq/YAP_TAZ_TEAD4_common.bed&quot;))</code></pre>
+<p>The next step is to get the ‘signal’ in those common peaks for YAP,
+TAZ and TEAD4, respectively. How do we do it?</p>
+<p>The signal is the number of reads fall/mapped into those
+peaks/regions. and normalized to total number of reads (library size)
+for each experiment.</p>
+<p>There are multiple ways to do it.</p>
+<div id="count-the-number-of-reads-from-bam-files-with-bedtools"
+class="section level4">
+<h4>count the number of reads from bam files with bedtools</h4>
+<p>The <a
+href="https://bedtools.readthedocs.io/en/latest/content/tools/multicov.html"><code>mutlicov</code></a>
+subcommand from bedtools is what we need.</p>
+<blockquote>
+<p>bedtools multicov, reports the count of alignments from multiple
+position-sorted and indexed BAM files that overlap intervals in a BED
+file. Specifically, for each BED interval provided, it reports a
+separate count of overlapping alignments from each BAM file.</p>
+</blockquote>
+<pre class="bash"><code>cd data/fastq
+bedtools multicov -bams YAP.sorted.bam TAZ.sorted.bam TEAD4.sorted.bam -bed YAP_TAZ_TEAD4_common.bed &gt; YAP_TAZ_TEAD4_counts.tsv</code></pre>
+<p>It takes less than a minute to finish. Let’s take a look at the
+file</p>
+<pre class="bash"><code>head YAP_TAZ_TEAD4_counts.tsv
+chr1    1024627 1025059 YAP_peak_3  494 .   88  72  82
+chr1    1264836 1265155 YAP_peak_4  148 .   32  37  88
+chr1    1265319 1265695 YAP_peak_5  131 .   29  31  26
+chr1    1360617 1360955 YAP_peak_6  306 .   46  52  88
+chr1    1659297 1659586 YAP_peak_8  45  .   15  14  20
+chr1    2061242 2061682 YAP_peak_10 356 .   54  65  60
+chr1    2140001 2140346 YAP_peak_11 86  .   27  18  27
+chr1    3543323 3543624 YAP_peak_12 155 .   24  30  28
+chr1    6724590 6724868 YAP_peak_14 251 .   38  42  90
+chr1    8061325 8061624 YAP_peak_17 62  .   21  34  38</code></pre>
+<p>The last three columns are counts for YAP1, TAZ and TEAD4 in the
+common regions.</p>
+<p>We need to normalize it to total number of reads in each library.
+Let’s use <code>samtools flagstat</code>:</p>
+<pre class="bash"><code>samtools flagstat YAP.sorted.bam
+24549590 + 0 in total (QC-passed reads + QC-failed reads)
+24549590 + 0 primary
+0 + 0 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+0 + 0 primary duplicates
+23653961 + 0 mapped (96.35% : N/A)
+23653961 + 0 primary mapped (96.35% : N/A)
+0 + 0 paired in sequencing
+0 + 0 read1
+0 + 0 read2
+0 + 0 properly paired (N/A : N/A)
+0 + 0 with itself and mate mapped
+0 + 0 singletons (N/A : N/A)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ&gt;=5)
+
+samtools flagstat TAZ.sorted.bam
+27521260 + 0 in total (QC-passed reads + QC-failed reads)
+27521260 + 0 primary
+0 + 0 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+0 + 0 primary duplicates
+26789648 + 0 mapped (97.34% : N/A)
+26789648 + 0 primary mapped (97.34% : N/A)
+0 + 0 paired in sequencing
+0 + 0 read1
+0 + 0 read2
+0 + 0 properly paired (N/A : N/A)
+0 + 0 with itself and mate mapped
+0 + 0 singletons (N/A : N/A)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ&gt;=5)
+
+samtools flagstat TEAD4.sorted.bam
+34776462 + 0 in total (QC-passed reads + QC-failed reads)
+34776462 + 0 primary
+0 + 0 secondary
+0 + 0 supplementary
+0 + 0 duplicates
+0 + 0 primary duplicates
+34332907 + 0 mapped (98.72% : N/A)
+34332907 + 0 primary mapped (98.72% : N/A)
+0 + 0 paired in sequencing
+0 + 0 read1
+0 + 0 read2
+0 + 0 properly paired (N/A : N/A)
+0 + 0 with itself and mate mapped
+0 + 0 singletons (N/A : N/A)
+0 + 0 with mate mapped to a different chr
+0 + 0 with mate mapped to a different chr (mapQ&gt;=5)
+</code></pre>
+<p>So the total number of priamry mapped reads are:
+<code>23653961</code>, <code>26789648</code> and <code>34332907</code>
+for YAP, TAZ and TEAD4, respectively.</p>
+<p>Load the data into R:</p>
+<pre class="r"><code>library(readr)
+counts&lt;- read_tsv(here(&quot;data/fastq/YAP_TAZ_TEAD4_counts.tsv&quot;), col_names = FALSE)
+colnames(counts)&lt;- c(&quot;chr&quot;, &quot;start&quot;, &quot;end&quot;, &quot;name&quot;, &quot;score&quot;, &quot;value&quot;, &quot;YAP1&quot;, &quot;TAZ&quot;, &quot;TEAD4&quot;)
+
+head(counts)</code></pre>
+<pre><code>#&gt; # A tibble: 6 × 9
+#&gt;   chr     start     end name        score value  YAP1   TAZ TEAD4
+#&gt;   &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 chr1  1024627 1025059 YAP_peak_3    494 .        88    72    82
+#&gt; 2 chr1  1264836 1265155 YAP_peak_4    148 .        32    37    88
+#&gt; 3 chr1  1265319 1265695 YAP_peak_5    131 .        29    31    26
+#&gt; 4 chr1  1360617 1360955 YAP_peak_6    306 .        46    52    88
+#&gt; 5 chr1  1659297 1659586 YAP_peak_8     45 .        15    14    20
+#&gt; 6 chr1  2061242 2061682 YAP_peak_10   356 .        54    65    60</code></pre>
+<p>normalize the counts to <code>CPM</code> (counts per million).</p>
+<pre class="r"><code>counts&lt;- counts %&gt;%
+  mutate(YAP1 = YAP1/23653961 * 10^6,
+         TAZ = TAZ/26789648 * 10^6,
+         TEAD4 = TEAD4/34332907 * 10^6)
+
+head(counts)</code></pre>
+<pre><code>#&gt; # A tibble: 6 × 9
+#&gt;   chr     start     end name        score value  YAP1   TAZ TEAD4
+#&gt;   &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 chr1  1024627 1025059 YAP_peak_3    494 .     3.72  2.69  2.39 
+#&gt; 2 chr1  1264836 1265155 YAP_peak_4    148 .     1.35  1.38  2.56 
+#&gt; 3 chr1  1265319 1265695 YAP_peak_5    131 .     1.23  1.16  0.757
+#&gt; 4 chr1  1360617 1360955 YAP_peak_6    306 .     1.94  1.94  2.56 
+#&gt; 5 chr1  1659297 1659586 YAP_peak_8     45 .     0.634 0.523 0.583
+#&gt; 6 chr1  2061242 2061682 YAP_peak_10   356 .     2.28  2.43  1.75</code></pre>
+<p>Now we are ready to plot!</p>
+<pre class="r"><code>ggplot(counts, aes(x=TEAD4, y= YAP1)) +
+  geom_point()</code></pre>
+<p><img src="figure/05_figure1_d_f.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>There is an outlier with strong signal (note, check it on IGV to see
+if it is real, it could be a black-listed region with strong signal)</p>
+<pre class="r"><code>counts %&gt;%
+  filter(TEAD4 &gt; 60)</code></pre>
+<pre><code>#&gt; # A tibble: 1 × 9
+#&gt;   chr      start      end name          score value  YAP1   TAZ TEAD4
+#&gt;   &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1 chr14 61754882 61755803 YAP_peak_3030  4298 .      82.6  80.3  64.5</code></pre>
+<p>It looks real on IGV and I checked it is not in one of the
+blacklisted regions.</p>
+<p><img src="imgs/strong_igv.png" /></p>
+<p>Note: Download the blacklisted regions from <a
+href="https://github.com/Boyle-Lab/Blacklist/tree/master">here</a>: <a
+href="https://github.com/Boyle-Lab/Blacklist/blob/master/lists/hg38-blacklist.v2.bed.gz"
+class="uri">https://github.com/Boyle-Lab/Blacklist/blob/master/lists/hg38-blacklist.v2.bed.gz</a></p>
+<p>We can remove that outlier, or use log2 scale</p>
+<pre class="r"><code>ggplot(counts, aes(x=TEAD4, y= YAP1)) +
+  geom_point(color = &quot;#ff4000&quot;) +
+  scale_x_continuous(trans = &#39;log2&#39;) +
+  scale_y_continuous(trans = &#39;log2&#39;) +
+  theme_classic(base_size = 14) +
+  xlab(&quot;TEAD4 signal&quot;) +
+  ylab(&quot;YAP1 signal&quot;)</code></pre>
+<p><img src="figure/05_figure1_d_f.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>We will use <a
+href="https://github.com/aphalo/ggpmisc"><code>ggpmisc</code></a> to add
+the R^2.</p>
+<pre class="r"><code>library(ggpmisc)
+ggplot(counts, aes(x=TEAD4, y= YAP1)) +
+  geom_point(color = &quot;#ff4000&quot;) +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE, color = &quot;black&quot;) +  # Linear regression line
+  stat_poly_eq(
+    aes(label = ..rr.label..),
+    formula = y ~ x,
+    parse = TRUE,
+    color = &quot;black&quot;
+  ) +
+  scale_x_continuous(trans = &#39;log2&#39;) +
+  scale_y_continuous(trans = &#39;log2&#39;) +
+  theme_classic(base_size = 14) +
+  xlab(&quot;TEAD4 signal&quot;) +
+  ylab(&quot;YAP1 signal&quot;)</code></pre>
+<p><img src="figure/05_figure1_d_f.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>correlation coefficent is the r which ranges from -1 to 1.
+Coefficient of Determination is the R^2.</p>
+<pre class="r"><code>correlation_coefficent&lt;- cor(log2(counts$TEAD4), log2(counts$YAP1))
+correlation_coefficent</code></pre>
+<pre><code>#&gt; [1] 0.8095894</code></pre>
+<pre class="r"><code>R_squared&lt;- correlation_coefficent^2
+
+R_squared</code></pre>
+<pre><code>#&gt; [1] 0.655435</code></pre>
+<p>We can re-create the other scatter plot easily:</p>
+<pre class="r"><code>ggplot(counts, aes(x=TEAD4, y= TAZ)) +
+  geom_point(color = &quot;#ff4000&quot;) +
+  geom_smooth(method = &quot;lm&quot;, se = FALSE, color = &quot;black&quot;) +  # Linear regression line
+  stat_poly_eq(
+    aes(label = ..rr.label..),
+    formula = y ~ x,
+    parse = TRUE,
+    color = &quot;black&quot;
+  ) +
+  scale_x_continuous(trans = &#39;log2&#39;) +
+  scale_y_continuous(trans = &#39;log2&#39;) +
+  theme_classic(base_size = 14) +
+  xlab(&quot;TEAD4 signal&quot;) +
+  ylab(&quot;TAZ signal&quot;)</code></pre>
+<p><img src="figure/05_figure1_d_f.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><strong>Tip</strong>: take a look at <a
+href="https://rpkgs.datanovia.com/ggpubr/reference/stat_cor.html"><code>ggpubr</code></a></p>
+</div>
+</div>
+<div id="figure-1f" class="section level3">
+<h3>Figure 1f</h3>
+<blockquote>
+<ol start="6" style="list-style-type: lower-alpha">
+<li>Absolute distance of YAP peaks (n=7709), TAZ peaks (n=9798), TEAD4
+peaks (n=8406) or overlapping YAP/TAZ/TEAD peaks (n=5522) to the nearest
+TSS.</li>
+</ol>
+</blockquote>
+<p>Figure 1f is a stacked bar plot. It shows the proportion of the peaks
+grouped by their distance to the closest TSS (transcription start
+site).</p>
+<p>I will show you how to do this from scratch:</p>
+<pre class="r"><code># BiocManager::install(&quot;TxDb.Hsapiens.UCSC.hg38.knownGene&quot;)
+
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+library(GenomicRanges)
+library(GenomicFeatures)
+# Get the TSS
+hg38_transcripts &lt;- transcripts(TxDb.Hsapiens.UCSC.hg38.knownGene)
+
+# get the TSS.
+tss_gr &lt;- promoters(hg38_transcripts, upstream=0, downstream=1)</code></pre>
+<pre class="r"><code># Calculate the distance to the nearest TSS
+distance_to_tss &lt;- distanceToNearest(YAP_peaks, tss_gr)
+
+# Print the distance
+distance_to_tss</code></pre>
+<pre><code>#&gt; Hits object with 9806 hits and 1 metadata column:
+#&gt;          queryHits subjectHits |  distance
+#&gt;          &lt;integer&gt;   &lt;integer&gt; | &lt;integer&gt;
+#&gt;      [1]         1           1 |      1544
+#&gt;      [2]         2          12 |      1890
+#&gt;      [3]         3         143 |      4504
+#&gt;      [4]         4       11811 |      1267
+#&gt;      [5]         5       11811 |      1750
+#&gt;      ...       ...         ... .       ...
+#&gt;   [9802]      9803      247714 |      4939
+#&gt;   [9803]      9804      251718 |     18165
+#&gt;   [9804]      9805      251730 |      2477
+#&gt;   [9805]      9806      247793 |      6869
+#&gt;   [9806]      9807      251784 |      2402
+#&gt;   -------
+#&gt;   queryLength: 9807 / subjectLength: 276905</code></pre>
+<p>It is a <code>Hits</code> object, and we can access the the
+<code>distance</code> metadata column</p>
+<pre class="r"><code>mcols(distance_to_tss)</code></pre>
+<pre><code>#&gt; DataFrame with 9806 rows and 1 column
+#&gt;       distance
+#&gt;      &lt;integer&gt;
+#&gt; 1         1544
+#&gt; 2         1890
+#&gt; 3         4504
+#&gt; 4         1267
+#&gt; 5         1750
+#&gt; ...        ...
+#&gt; 9802      4939
+#&gt; 9803     18165
+#&gt; 9804      2477
+#&gt; 9805      6869
+#&gt; 9806      2402</code></pre>
+<pre class="r"><code>head(mcols(distance_to_tss)$distance)</code></pre>
+<pre><code>#&gt; [1] 1544 1890 4504 1267 1750  821</code></pre>
+<p>Let’s do that for all three factors:</p>
+<pre class="r"><code>YAP_dist&lt;- mcols(distanceToNearest(YAP_peaks, tss_gr))$distance
+TAZ_dist&lt;- mcols(distanceToNearest(TAZ_peaks, tss_gr))$distance
+TEAD4_dist&lt;- mcols(distanceToNearest(TEAD4_peak, tss_gr))$distance</code></pre>
+<p>put them in a single dataframe</p>
+<pre class="r"><code>tss_distance_df&lt;- bind_rows(data.frame(factor = &quot;YAP&quot;, distance = YAP_dist),
+          data.frame(factor = &quot;TAZ&quot;, distance = TAZ_dist),
+          data.frame(factor = &quot;TEAD4&quot;, distance = TEAD4_dist))
+          
+head(tss_distance_df)</code></pre>
+<pre><code>#&gt;   factor distance
+#&gt; 1    YAP     1544
+#&gt; 2    YAP     1890
+#&gt; 3    YAP     4504
+#&gt; 4    YAP     1267
+#&gt; 5    YAP     1750
+#&gt; 6    YAP      821</code></pre>
+<pre class="r"><code>tss_distance_df %&gt;%
+  mutate(category = case_when(
+    distance &lt; 1000 ~ &quot;&lt;1kb&quot;,
+    distance &gt;=1000 &amp; distance &lt; 10000 ~ &quot;1-10kb&quot;,
+    distance &gt;= 10000 &amp; distance &lt;=100000 ~ &quot;10-100kb&quot;,
+    distance &gt; 100000 ~ &quot;100kb&quot;
+  )) %&gt;%
+  head()</code></pre>
+<pre><code>#&gt;   factor distance category
+#&gt; 1    YAP     1544   1-10kb
+#&gt; 2    YAP     1890   1-10kb
+#&gt; 3    YAP     4504   1-10kb
+#&gt; 4    YAP     1267   1-10kb
+#&gt; 5    YAP     1750   1-10kb
+#&gt; 6    YAP      821     &lt;1kb</code></pre>
+<p>You can see how I build the pipe <code>%&gt;%</code> step by
+step.</p>
+<pre class="r"><code>counts_per_category&lt;- tss_distance_df %&gt;%
+  mutate(category = case_when(
+    distance &lt; 1000 ~ &quot;&lt;1kb&quot;,
+    distance &gt;=1000 &amp; distance &lt; 10000 ~ &quot;1-10kb&quot;,
+    distance &gt;= 10000 &amp; distance &lt;=100000 ~ &quot;10-100kb&quot;,
+    distance &gt; 100000 ~ &quot;&gt;100kb&quot;
+  )) %&gt;%
+  group_by(factor, category) %&gt;%
+  count()
+
+counts_per_category</code></pre>
+<pre><code>#&gt; # A tibble: 12 × 3
+#&gt; # Groups:   factor, category [12]
+#&gt;    factor category     n
+#&gt;    &lt;chr&gt;  &lt;chr&gt;    &lt;int&gt;
+#&gt;  1 TAZ    1-10kb    3985
+#&gt;  2 TAZ    10-100kb  4499
+#&gt;  3 TAZ    &lt;1kb      1879
+#&gt;  4 TAZ    &gt;100kb     355
+#&gt;  5 TEAD4  1-10kb    4331
+#&gt;  6 TEAD4  10-100kb  4955
+#&gt;  7 TEAD4  &lt;1kb      1817
+#&gt;  8 TEAD4  &gt;100kb     409
+#&gt;  9 YAP    1-10kb    3547
+#&gt; 10 YAP    10-100kb  3983
+#&gt; 11 YAP    &lt;1kb      1983
+#&gt; 12 YAP    &gt;100kb     293</code></pre>
+<pre class="r"><code>total_counts&lt;- tss_distance_df %&gt;%
+  mutate(category = case_when(
+    distance &lt; 1000 ~ &quot;&lt;1kb&quot;,
+    distance &gt;=1000 &amp; distance &lt; 10000 ~ &quot;1-10kb&quot;,
+    distance &gt;= 10000 &amp; distance &lt;=100000 ~ &quot;10-100kb&quot;,
+    distance &gt; 100000 ~ &quot;&gt;100kb&quot;
+  )) %&gt;%
+  count(factor, name = &quot;total&quot;)
+
+total_counts</code></pre>
+<pre><code>#&gt;   factor total
+#&gt; 1    TAZ 10718
+#&gt; 2  TEAD4 11512
+#&gt; 3    YAP  9806</code></pre>
+<pre class="r"><code>merged_df&lt;- left_join(counts_per_category, total_counts)
+merged_df %&gt;%
+  mutate(Percentage = n/total * 100) %&gt;%
+  ggplot(aes(x= factor, y = Percentage, fill = category)) +
+  geom_bar(stat = &quot;identity&quot;, position = &quot;stack&quot;) +
+  labs(
+    title = &quot;Distance to TSS&quot;,
+    x = &quot;Group&quot;,
+    y = &quot;Percentage&quot;
+  ) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_classic(base_size = 14)</code></pre>
+<p><img src="figure/05_figure1_d_f.Rmd/unnamed-chunk-20-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>You can customize the color and reorder the category as you want.</p>
+<pre class="r"><code>merged_df$category&lt;- factor(merged_df$category, 
+                            levels = c(&quot;&lt;1kb&quot;, &quot;1-10kb&quot;, &quot;10-100kb&quot;, &quot;&gt;100kb&quot;))
+merged_df %&gt;%
+  mutate(Percentage = n/total * 100) %&gt;%
+  ggplot(aes(x= factor, y = Percentage, fill = category)) +
+  geom_bar(stat = &quot;identity&quot;, position = &quot;stack&quot;) +
+  labs(
+    title = &quot;Distance to TSS&quot;,
+    x = &quot;Group&quot;,
+    y = &quot;Percentage&quot;
+  ) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  scale_fill_manual(values = c(&quot;#EF3E2B&quot;, &quot;#F16161&quot;, &quot;#F59595&quot;, &quot;#FAD1C8&quot;)) +
+  theme_classic(base_size = 14)</code></pre>
+<p><img src="figure/05_figure1_d_f.Rmd/unnamed-chunk-21-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The orginal figure shows a big proportion of peaks &gt; 100kb. This
+is a little surprising to me.</p>
+<p>of course, you can also use packages such as
+<code>ChIPseeker</code>.</p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>#&gt; R version 4.4.1 (2024-06-14)
+#&gt; Platform: aarch64-apple-darwin20
+#&gt; Running under: macOS Sonoma 14.1
+#&gt; 
+#&gt; Matrix products: default
+#&gt; BLAS:   /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRblas.0.dylib 
+#&gt; LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+#&gt; 
+#&gt; locale:
+#&gt; [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+#&gt; 
+#&gt; time zone: America/New_York
+#&gt; tzcode source: internal
+#&gt; 
+#&gt; attached base packages:
+#&gt; [1] stats4    stats     graphics  grDevices utils     datasets  methods  
+#&gt; [8] base     
+#&gt; 
+#&gt; other attached packages:
+#&gt;  [1] TxDb.Hsapiens.UCSC.hg38.knownGene_3.18.0
+#&gt;  [2] GenomicFeatures_1.56.0                  
+#&gt;  [3] AnnotationDbi_1.66.0                    
+#&gt;  [4] Biobase_2.64.0                          
+#&gt;  [5] ggpmisc_0.6.1                           
+#&gt;  [6] ggpp_0.5.8-1                            
+#&gt;  [7] readr_2.1.5                             
+#&gt;  [8] ggplot2_3.5.1                           
+#&gt;  [9] dplyr_1.1.4                             
+#&gt; [10] here_1.0.1                              
+#&gt; [11] rtracklayer_1.64.0                      
+#&gt; [12] GenomicRanges_1.56.1                    
+#&gt; [13] GenomeInfoDb_1.40.1                     
+#&gt; [14] IRanges_2.38.1                          
+#&gt; [15] S4Vectors_0.42.1                        
+#&gt; [16] BiocGenerics_0.50.0                     
+#&gt; [17] workflowr_1.7.1                         
+#&gt; 
+#&gt; loaded via a namespace (and not attached):
+#&gt;   [1] DBI_1.2.3                   bitops_1.0-8               
+#&gt;   [3] polynom_1.4-1               rlang_1.1.4                
+#&gt;   [5] magrittr_2.0.3              git2r_0.35.0               
+#&gt;   [7] RSQLite_2.3.7               matrixStats_1.3.0          
+#&gt;   [9] compiler_4.4.1              mgcv_1.9-1                 
+#&gt;  [11] getPass_0.2-4               png_0.1-8                  
+#&gt;  [13] callr_3.7.6                 vctrs_0.6.5                
+#&gt;  [15] quantreg_5.99.1             stringr_1.5.1              
+#&gt;  [17] pkgconfig_2.0.3             crayon_1.5.3               
+#&gt;  [19] fastmap_1.2.0               XVector_0.44.0             
+#&gt;  [21] labeling_0.4.3              utf8_1.2.4                 
+#&gt;  [23] Rsamtools_2.20.0            promises_1.3.0             
+#&gt;  [25] rmarkdown_2.27              tzdb_0.4.0                 
+#&gt;  [27] UCSC.utils_1.0.0            ps_1.7.7                   
+#&gt;  [29] MatrixModels_0.5-3          bit_4.0.5                  
+#&gt;  [31] xfun_0.46                   zlibbioc_1.50.0            
+#&gt;  [33] cachem_1.1.0                jsonlite_1.8.8             
+#&gt;  [35] blob_1.2.4                  highr_0.11                 
+#&gt;  [37] later_1.3.2                 DelayedArray_0.30.1        
+#&gt;  [39] BiocParallel_1.38.0         parallel_4.4.1             
+#&gt;  [41] R6_2.5.1                    bslib_0.8.0                
+#&gt;  [43] stringi_1.8.4               jquerylib_0.1.4            
+#&gt;  [45] Rcpp_1.0.13                 SummarizedExperiment_1.34.0
+#&gt;  [47] knitr_1.48                  httpuv_1.6.15              
+#&gt;  [49] Matrix_1.7-0                splines_4.4.1              
+#&gt;  [51] tidyselect_1.2.1            rstudioapi_0.16.0          
+#&gt;  [53] abind_1.4-5                 yaml_2.3.10                
+#&gt;  [55] codetools_0.2-20            curl_5.2.1                 
+#&gt;  [57] processx_3.8.4              lattice_0.22-6             
+#&gt;  [59] tibble_3.2.1                KEGGREST_1.44.1            
+#&gt;  [61] withr_3.0.0                 evaluate_0.24.0            
+#&gt;  [63] survival_3.6-4              Biostrings_2.72.1          
+#&gt;  [65] confintr_1.0.2              pillar_1.9.0               
+#&gt;  [67] MatrixGenerics_1.16.0       whisker_0.4.1              
+#&gt;  [69] generics_0.1.3              vroom_1.6.5                
+#&gt;  [71] rprojroot_2.0.4             RCurl_1.98-1.16            
+#&gt;  [73] hms_1.1.3                   munsell_0.5.1              
+#&gt;  [75] scales_1.3.0                glue_1.7.0                 
+#&gt;  [77] tools_4.4.1                 BiocIO_1.14.0              
+#&gt;  [79] SparseM_1.84-2              GenomicAlignments_1.40.0   
+#&gt;  [81] fs_1.6.4                    XML_3.99-0.17              
+#&gt;  [83] grid_4.4.1                  colorspace_2.1-1           
+#&gt;  [85] nlme_3.1-164                GenomeInfoDbData_1.2.12    
+#&gt;  [87] restfulr_0.0.15             cli_3.6.3                  
+#&gt;  [89] fansi_1.0.6                 S4Arrays_1.4.1             
+#&gt;  [91] gtable_0.3.5                sass_0.4.9                 
+#&gt;  [93] digest_0.6.36               SparseArray_1.4.8          
+#&gt;  [95] rjson_0.2.22                farver_2.1.2               
+#&gt;  [97] memoise_2.0.1               htmltools_0.5.8.1          
+#&gt;  [99] lifecycle_1.0.4             httr_1.4.7                 
+#&gt; [101] bit64_4.0.5                 MASS_7.3-60.2</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

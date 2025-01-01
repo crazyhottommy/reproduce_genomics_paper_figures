@@ -36,6 +36,9 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/vembedr-0.1.5/css/vembedr.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
 <!-- Add a small amount of space between sections. -->
@@ -325,7 +328,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">reproduce_genomics_paper_figures</a>
+      <a class="navbar-brand" href="index.html">chatomics:Reproduce genomics paper figures</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -340,7 +343,13 @@ div.tocify {
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
@@ -380,7 +389,7 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-12-26
+<strong>Last updated:</strong> 2024-12-31
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -419,10 +428,10 @@ changes </a>
 <div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown is untracked by Git. To know which version of the R
-Markdown file created these results, you’ll want to first commit it to
-the Git repo. If you’re still working on the analysis, you can ignore
-this warning. When you’re finished, you can run
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
 <code>wflow_publish</code> to commit the R Markdown file and build the
 HTML.</p>
 </div>
@@ -515,13 +524,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongff491b5">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomcrazyhottommyreproducegenomicspaperfigurestreed2e0e8aea9bd22bcb74c74dbbfe5ade42f9f4707targetblankd2e0e8aa">
 <span class="glyphicon glyphicon-ok text-success"
-aria-hidden="true"></span> <strong>Repository version:</strong> ff491b5
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures/tree/d2e0e8aea9bd22bcb74c74dbbfe5ade42f9f4707" target="_blank">d2e0e8a</a>
 </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongff491b5"
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomcrazyhottommyreproducegenomicspaperfigurestreed2e0e8aea9bd22bcb74c74dbbfe5ade42f9f4707targetblankd2e0e8aa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -530,7 +541,8 @@ and connecting the code version to the results is critical for
 reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version ff491b5.
+The results in this page were generated with repository version
+<a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures/tree/d2e0e8aea9bd22bcb74c74dbbfe5ade42f9f4707" target="_blank">d2e0e8a</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -547,17 +559,25 @@ were generated:
 Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rproj.user/
-    Ignored:    data/.DS_Store
+    Ignored:    analysis/.DS_Store
+    Ignored:    data/fastq/
+    Ignored:    data/public_data/
+    Ignored:    data/reference/
 
 Untracked files:
-    Untracked:  analysis/01_download_fastq_from_GEO.Rmd
-    Untracked:  analysis/02_align_to_hg38.Rmd
-    Untracked:  data/fastq/
-    Untracked:  data/reference/
-    Untracked:  imgs/
+    Untracked:  analysis/04_figure1_a_b_c.Rmd
+    Untracked:  analysis/05_figure1_d_f.Rmd
+    Untracked:  analysis/06_figure1_g_h.Rmd
+    Untracked:  analysis/07_figure1_i_j_k.Rmd
+    Untracked:  analysis/08_homework.Rmd
 
 Unstaged changes:
+    Modified:   .gitignore
     Modified:   README.md
+    Modified:   analysis/01_download_fastq_from_GEO.Rmd
+    Modified:   analysis/02_align_to_hg38.Rmd
+    Modified:   analysis/03_generate_bigwig.Rmd
+    Modified:   analysis/index.Rmd
     Modified:   reproduce_genomics_paper_figures.Rproj
 
 </code></pre>
@@ -574,18 +594,104 @@ have uncommitted changes.
 </div>
 <div id="versions" class="tab-pane fade">
 <p>
-There are no past versions. Publish this analysis with
-<code>wflow_publish()</code> to start tracking its development.
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/02_align_to_hg38.Rmd</code>) and
+HTML (<code>docs/02_align_to_hg38.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
 </p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures/blob/fb4fce6f09b04d3b84fa8c1d02093800a1cf22a3/analysis/02_align_to_hg38.Rmd" target="_blank">fb4fce6</a>
+</td>
+<td>
+crazyhottommy
+</td>
+<td>
+2024-12-27
+</td>
+<td>
+preprocessing done
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/crazyhottommy/reproduce_genomics_paper_figures/fb4fce6f09b04d3b84fa8c1d02093800a1cf22a3/docs/02_align_to_hg38.html" target="_blank">fb4fce6</a>
+</td>
+<td>
+crazyhottommy
+</td>
+<td>
+2024-12-27
+</td>
+<td>
+preprocessing done
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr>
 </div>
 </div>
 </div>
 <p>The next step is to align the fastq files to the genome. We will use
 hg38 reference human genome for the alignment.</p>
-<p>Where to download the reference?</p>
-<p>watch xx</p>
-<p>use refgenine.</p>
+<div id="where-to-download-the-reference" class="section level3">
+<h3>Where to download the reference?</h3>
+<p>watch my youtube video on this topic:</p>
+<div class="vembedr">
+<div>
+<iframe src="https://www.youtube.com/embed/eIVlSG11umQ" width="533" height="300" frameborder="0" allowfullscreen="" data-external="1"></iframe>
+</div>
+</div>
+<p>One can go to: 1. UCSC <a
+href="https://hgdownload.soe.ucsc.edu/downloads.html"
+class="uri">https://hgdownload.soe.ucsc.edu/downloads.html</a></p>
+<ol start="2" style="list-style-type: decimal">
+<li><p>NCBI <a
+href="https://www.ncbi.nlm.nih.gov/datasets/docs/v2/policies-annotation/genomeftp/"
+class="uri">https://www.ncbi.nlm.nih.gov/datasets/docs/v2/policies-annotation/genomeftp/</a></p></li>
+<li><p>ENSEMBL <a
+href="https://useast.ensembl.org/info/data/ftp/index.html"
+class="uri">https://useast.ensembl.org/info/data/ftp/index.html</a></p></li>
+<li><p>GENCODE <a href="https://www.gencodegenes.org/"
+class="uri">https://www.gencodegenes.org/</a></p></li>
+</ol>
+<p>to download the reference genome manually or use <a
+href="https://refgenie.databio.org/en/latest/">refgenie</a></p>
+</div>
+<div id="choose-the-aligner" class="section level3">
+<h3>Choose the aligner</h3>
 <p>It is single-end read with 50 base pairs.</p>
 <pre class="bash"><code>zless TAZ.fatq.gz | head -2 |tail -1
 ATAGGCTTTAAGCTGTCTTTGGTTTGAAGGTGGGATTTTACCGGGGACCC
@@ -594,11 +700,20 @@ zless TAZ.fatq.gz | head -2 |tail -1 | wc -L
       50</code></pre>
 <p>The ChIP-seq signal can happen to anywhere in the genome, so we need
 an aligner to align the reads to the genome.</p>
-<p>For RNAseq data, <code>STAR</code> is a popular aligner.</p>
-<p>BWA, BWA-mem is very popular for DNA-seq (WGS, WES) alignment.</p>
+<p>For RNAseq data, we need to align the reads to a
+<code>transcriptome</code>.</p>
+<p><a href="https://github.com/alexdobin/STAR"><code>STAR</code></a> is
+a popular aligner for RNAseq.</p>
+<p><a href="https://github.com/lh3/bwa"><code>BWA</code></a> is very
+popular for DNA-seq (WGS, WES) alignment.</p>
+<p>For long reads (pacbio or nanopore), use <a
+href="https://github.com/lh3/minimap2"><code>minimap2</code></a>.</p>
+<p>BWA and minimap2 are both developed by Heng Li, not surprisingly, the
+<a href="https://www.biostars.org/p/85637/">mapping God</a>.</p>
 <p>Let’s use <code>bowtie2</code> <a
 href="https://bowtie-bio.sourceforge.net/bowtie2/index.shtml"
-class="uri">https://bowtie-bio.sourceforge.net/bowtie2/index.shtml</a></p>
+class="uri">https://bowtie-bio.sourceforge.net/bowtie2/index.shtml</a>
+for our ChIP-seq data.</p>
 <blockquote>
 <p>Bowtie 2 is an ultrafast and memory-efficient tool for aligning
 sequencing reads to long reference sequences. It is particularly good at
@@ -606,6 +721,9 @@ aligning reads of about 50 up to 100s or 1,000s of characters, and
 particularly good at aligning to relatively long (e.g. mammalian)
 genomes.</p>
 </blockquote>
+<p>In the early days, ChIP-seq data were 36bp long, so Bowtie 1 was
+used.</p>
+</div>
 <div id="install-bowtie2" class="section level3">
 <h3>install bowtie2</h3>
 <pre class="bash"><code>conda install bowtie2 -c bioconda
@@ -635,7 +753,11 @@ first.</p>
 </div>
 <div id="download-index" class="section level3">
 <h3>download index</h3>
-<p>scroll down the page <a
+<p>The aligners usually needs an index file that is created using the
+genome reference files (fasta) we downloaded from UCSC, NCBI, ENSEMBL or
+GENCODE.</p>
+<p>For bowtie2, there is a pre-built index file for us to download.</p>
+<p>Scroll down the page <a
 href="https://bowtie-bio.sourceforge.net/bowtie2/index.shtml"
 class="uri">https://bowtie-bio.sourceforge.net/bowtie2/index.shtml</a>
 and on the left you will see the index to download.</p>
@@ -645,6 +767,8 @@ and place the folder to the <code>data/reference</code> folder.</p>
 <p>Which reference genome to use? Bonus, read this <a
 href="https://lh3.github.io/2017/11/13/which-human-reference-genome-to-use">post</a>
 by HengLi.</p>
+<p>If there is no pre-built index, take a look at this <a
+href="https://github.com/nf-core/references">nf-core/references</a>.</p>
 <pre class="bash"><code># make sure you are in the data folder
 cd data/
 
@@ -653,20 +777,20 @@ bowtie2 -x reference/GRCh38_noalt_as/GRCh38_noalt_as -U fastq/YAP.fastq.gz -S fa
 <p><code>-x reference/GRCh38_noalt_as/GRCh38_noalt_as</code>: The path
 to the Bowtie2 reference genome index (built with bowtie2-build
 reference.fa reference_index).</p>
-<p>-U input.fastq: Input FASTQ file for single-end reads.</p>
-<p>-S output.sam: Output alignment file in SAM format.</p>
-<p>–threads 8: Use 8 threads to speed up alignment.</p>
-<p>–no-mixed: Ensures that only properly paired reads are reported (not
-relevant for single-end data but good for ChIP-seq).</p>
-<p>–no-discordant: Prevents reporting discordant alignments (not
-relevant for single-end data but ensures consistent results for
-paired-end).</p>
-<p>-k 1: Reports only the best alignment for each read (important for
-ChIP-seq to avoid multi-mapping).</p>
+<p><code>-U input.fastq</code>: Input FASTQ file for single-end
+reads.</p>
+<p><code>-S output.sam</code>: Output alignment file in SAM format.</p>
+<p><code>--threads 8</code>: Use 8 threads to speed up alignment.</p>
+<p><code>--no-mixed</code>: Ensures that only properly paired reads are
+reported (not relevant for single-end data but good for ChIP-seq).</p>
+<p><code>--no-discordant</code>: Prevents reporting discordant
+alignments (not relevant for single-end data but ensures consistent
+results for paired-end).</p>
+<p><code>-k 1</code>: Reports only the best alignment for each read
+(important for ChIP-seq to avoid multi-mapping).</p>
 <p>Below is the output. And it is super-fast!! for 24 million reads, it
 only took me 1.5 mins with 8 CPUs.</p>
-<pre class="bash"><code>
-24549590 reads; of these:
+<pre class="bash"><code>24549590 reads; of these:
   24549590 (100.00%) were unpaired; of these:
     895629 (3.65%) aligned 0 times
     23653961 (96.35%) aligned exactly 1 time
@@ -801,20 +925,21 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] workflowr_1.7.1
+[1] vembedr_0.1.5   workflowr_1.7.1
 
 loaded via a namespace (and not attached):
- [1] vctrs_0.6.5       httr_1.4.7        cli_3.6.3         knitr_1.48       
- [5] rlang_1.1.4       xfun_0.46         stringi_1.8.4     processx_3.8.4   
- [9] promises_1.3.0    jsonlite_1.8.8    glue_1.7.0        rprojroot_2.0.4  
-[13] git2r_0.35.0      htmltools_0.5.8.1 httpuv_1.6.15     ps_1.7.7         
-[17] sass_0.4.9        fansi_1.0.6       rmarkdown_2.27    jquerylib_0.1.4  
-[21] tibble_3.2.1      evaluate_0.24.0   fastmap_1.2.0     yaml_2.3.10      
-[25] lifecycle_1.0.4   whisker_0.4.1     stringr_1.5.1     compiler_4.4.1   
-[29] fs_1.6.4          pkgconfig_2.0.3   Rcpp_1.0.13       rstudioapi_0.16.0
-[33] later_1.3.2       digest_0.6.36     R6_2.5.1          utf8_1.2.4       
-[37] pillar_1.9.0      callr_3.7.6       magrittr_2.0.3    bslib_0.8.0      
-[41] tools_4.4.1       cachem_1.1.0      getPass_0.2-4    </code></pre>
+ [1] jsonlite_1.8.8    compiler_4.4.1    promises_1.3.0    Rcpp_1.0.13      
+ [5] stringr_1.5.1     git2r_0.35.0      assertthat_0.2.1  callr_3.7.6      
+ [9] later_1.3.2       jquerylib_0.1.4   yaml_2.3.10       fastmap_1.2.0    
+[13] R6_2.5.1          curl_5.2.1        knitr_1.48        tibble_3.2.1     
+[17] rprojroot_2.0.4   bslib_0.8.0       pillar_1.9.0      rlang_1.1.4      
+[21] utf8_1.2.4        cachem_1.1.0      stringi_1.8.4     httpuv_1.6.15    
+[25] xfun_0.46         getPass_0.2-4     fs_1.6.4          sass_0.4.9       
+[29] cli_3.6.3         magrittr_2.0.3    ps_1.7.7          digest_0.6.36    
+[33] processx_3.8.4    rstudioapi_0.16.0 lifecycle_1.0.4   vctrs_0.6.5      
+[37] evaluate_0.24.0   glue_1.7.0        whisker_0.4.1     fansi_1.0.6      
+[41] rmarkdown_2.27    httr_1.4.7        tools_4.4.1       pkgconfig_2.0.3  
+[45] htmltools_0.5.8.1</code></pre>
 </div>
 </div>
 </div>

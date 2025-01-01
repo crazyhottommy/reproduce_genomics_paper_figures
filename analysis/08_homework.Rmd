@@ -1,0 +1,15 @@
+---
+title: "Homework"
+output: html_document
+date: "2024-12-31"
+---
+
+Now that you have followed along to reproduce a figure from a paper, it is time
+for you to do it alone.
+
+Go and read this paper [Integrative epigenetic taxonomy of primary prostate cancer](https://www.nature.com/articles/s41467-018-07270-2) and try to reproduce
+Figure 2.
+
+![](imgs/fig2.png)
+
+All ChIP-seq and RNA-seq data generated in this study are deposited in the Gene Expression Omnibus (GEO) database under the accession numbers GSE120738 and GSE120741.
