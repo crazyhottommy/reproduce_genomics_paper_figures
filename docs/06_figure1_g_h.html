@@ -327,7 +327,7 @@ div.tocify {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">chatomics:Reproduce genomics paper figures</a>
+      <a class="navbar-brand" href="index.html">FigRemake with Chatomics</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -388,7 +388,7 @@ aria-hidden="true"></span> </a>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2024-12-29
+<strong>Last updated:</strong> 2025-01-04
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -427,10 +427,10 @@ changes </a>
 <div id="strongRMarkdownfilestronguncommittedchanges"
 class="panel-collapse collapse">
 <div class="panel-body">
-<p>The R Markdown is untracked by Git. To know which version of the R
-Markdown file created these results, you’ll want to first commit it to
-the Git repo. If you’re still working on the analysis, you can ignore
-this warning. When you’re finished, you can run
+<p>The R Markdown file has unstaged changes. To know which version of
+the R Markdown file created these results, you’ll want to first commit
+it to the Git repo. If you’re still working on the analysis, you can
+ignore this warning. When you’re finished, you can run
 <code>wflow_publish</code> to commit the R Markdown file and build the
 HTML.</p>
 </div>
@@ -523,15 +523,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomcrazyhottommyreproducegenomicspaperfigurestreed2e0e8aea9bd22bcb74c74dbbfe5ade42f9f4707targetblankd2e0e8aa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomcrazyhottommyreproducegenomicspaperfigurestree883cb56f69344e885d1adaa6c40f0d551bed1a9etargetblank883cb56a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures/tree/d2e0e8aea9bd22bcb74c74dbbfe5ade42f9f4707" target="_blank">d2e0e8a</a>
+<a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures/tree/883cb56f69344e885d1adaa6c40f0d551bed1a9e" target="_blank">883cb56</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomcrazyhottommyreproducegenomicspaperfigurestreed2e0e8aea9bd22bcb74c74dbbfe5ade42f9f4707targetblankd2e0e8aa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomcrazyhottommyreproducegenomicspaperfigurestree883cb56f69344e885d1adaa6c40f0d551bed1a9etargetblank883cb56a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -541,7 +541,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures/tree/d2e0e8aea9bd22bcb74c74dbbfe5ade42f9f4707" target="_blank">d2e0e8a</a>.
+<a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures/tree/883cb56f69344e885d1adaa6c40f0d551bed1a9e" target="_blank">883cb56</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -563,18 +563,18 @@ Ignored files:
     Ignored:    data/public_data/
     Ignored:    data/reference/
 
-Untracked files:
-    Untracked:  analysis/04_figure1_a_b_c.Rmd
-    Untracked:  analysis/05_figure1_d_f.Rmd
-    Untracked:  analysis/06_figure1_g_h.Rmd
-    Untracked:  analysis/07_figure1_i_j_k.Rmd
-
 Unstaged changes:
     Modified:   .gitignore
-    Modified:   README.md
+    Modified:   analysis/01_download_fastq_from_GEO.Rmd
+    Modified:   analysis/02_align_to_hg38.Rmd
     Modified:   analysis/03_generate_bigwig.Rmd
-    Modified:   analysis/index.Rmd
-    Modified:   reproduce_genomics_paper_figures.Rproj
+    Modified:   analysis/04_figure1_a_b_c.Rmd
+    Modified:   analysis/05_figure1_d_f.Rmd
+    Modified:   analysis/06_figure1_g_h.Rmd
+    Modified:   analysis/07_figure1_i_j_k.Rmd
+    Modified:   analysis/08_homework.Rmd
+    Modified:   analysis/_site.yml
+    Modified:   analysis/about.Rmd
 
 </code></pre>
 <p>
@@ -590,9 +590,72 @@ have uncommitted changes.
 </div>
 <div id="versions" class="tab-pane fade">
 <p>
-There are no past versions. Publish this analysis with
-<code>wflow_publish()</code> to start tracking its development.
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/06_figure1_g_h.Rmd</code>) and
+HTML (<code>docs/06_figure1_g_h.html</code>) files. If you’ve configured
+a remote Git repository (see <code>?wflow_git_remote</code>), click on
+the hyperlinks in the table below to view the files as they were in that
+past version.
 </p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures/blob/c9a4ca2d11835c56a2b7685b05e4a683ab50bbed/analysis/06_figure1_g_h.Rmd" target="_blank">c9a4ca2</a>
+</td>
+<td>
+crazyhottommy
+</td>
+<td>
+2024-12-31
+</td>
+<td>
+version 0.1
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/crazyhottommy/reproduce_genomics_paper_figures/c9a4ca2d11835c56a2b7685b05e4a683ab50bbed/docs/06_figure1_g_h.html" target="_blank">c9a4ca2</a>
+</td>
+<td>
+crazyhottommy
+</td>
+<td>
+2024-12-31
+</td>
+<td>
+version 0.1
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <hr>
 </div>
 </div>
@@ -659,9 +722,9 @@ features those histone modifications are associated with.</p>
 from <a
 href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE49651"
 class="uri">https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE49651</a>.</p>
-<p><img src="imgs/GEO.png" /></p>
-<p>click the <code>ftp</code> or <code>http</code> in the link above,
-and you will download the <code>peaks.txt.gz</code> files.</p>
+<p><img src="imgs/GEO.png" /> click the <code>ftp</code> or
+<code>http</code> in the link above, and you will download the
+<code>peaks.txt.gz</code> files.</p>
 <p>Note, the data were aligned to hg19 human genome. We did our
 alignment using hg38 genome. We will need to lift-over the hg19 peak
 files to hg38 version.</p>
@@ -809,6 +872,43 @@ ggplot(annotation_df, aes(x = &quot;&quot;, y = peak_number, fill = category)) +
   labs(title = &quot;YAP/TAZ/TEAD4 peaks&quot;) +
   scale_fill_brewer(palette = &quot;Set3&quot;) </code></pre>
 <p><img src="figure/06_figure1_g_h.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-10-1">
+Past versions of unnamed-chunk-10-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures/blob/c9a4ca2d11835c56a2b7685b05e4a683ab50bbed/docs/figure/06_figure1_g_h.Rmd/unnamed-chunk-10-1.png" target="_blank">c9a4ca2</a>
+</td>
+<td>
+crazyhottommy
+</td>
+<td>
+2024-12-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>change the order of the categories by changing the factor level</p>
 <pre class="r"><code>annotation_df$category&lt;- factor(annotation_df$category, 
                                 levels = c(&quot;promoters&quot;, &quot;active_enhancers&quot;,
@@ -822,8 +922,45 @@ ggplot(annotation_df, aes(x = &quot;&quot;, y = peak_number, fill = category)) +
   theme_void() + # Remove unnecessary axes
   labs(title = &quot;YAP/TAZ/TEAD4 peaks&quot;) +
   scale_fill_manual(values = colors)</code></pre>
-<p><img src="figure/06_figure1_g_h.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" />
-Note, the authors re-called the peaks using their own IgG sample:</p>
+<p><img src="figure/06_figure1_g_h.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-11-1">
+Past versions of unnamed-chunk-11-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures/blob/c9a4ca2d11835c56a2b7685b05e4a683ab50bbed/docs/figure/06_figure1_g_h.Rmd/unnamed-chunk-11-1.png" target="_blank">c9a4ca2</a>
+</td>
+<td>
+crazyhottommy
+</td>
+<td>
+2024-12-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Note, the authors re-called the peaks using their own IgG sample:</p>
 <blockquote>
 <p>Peak calls and read density tracks were generated using SPP version
 1.1148 with default parameters and using as control sample the IgG
@@ -857,6 +994,43 @@ ggplot(annotation_df, aes(x = &quot;&quot;, y = peak_number, fill = category)) +
   scale_fill_manual(values = colors) +
   geom_text(aes(label = label), position = position_stack(vjust = 0.5)) # Add percentage labels</code></pre>
 <p><img src="figure/06_figure1_g_h.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-13-1">
+Past versions of unnamed-chunk-13-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-13-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/crazyhottommy/reproduce_genomics_paper_figures/blob/c9a4ca2d11835c56a2b7685b05e4a683ab50bbed/docs/figure/06_figure1_g_h.Rmd/unnamed-chunk-13-1.png" target="_blank">c9a4ca2</a>
+</td>
+<td>
+crazyhottommy
+</td>
+<td>
+2024-12-31
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Although we have a bigger proportion of unclassified peaks, the
 conclusion is the same: A large proportion of the YAP1/TAZ/TEAD4 peaks
 are located at active enhancers.</p>

@@ -1,4 +1,4 @@
-name: reproduce_genomics_paper_figures
+name: FigRemake with Chatomics
 output_dir: ../docs
 navbar:
   title: FigRemake with Chatomics

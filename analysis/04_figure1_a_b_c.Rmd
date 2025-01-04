@@ -18,7 +18,6 @@ Now the fun starts as we finished all the pre-processing steps. Let's recreate
 the figure 1a,b,c!
 
 ![](imgs/figabc.png)
-
 ### Figure 1a
 
 Figure 1a and 1b are venn-diagram showing the overlapping peak number of 

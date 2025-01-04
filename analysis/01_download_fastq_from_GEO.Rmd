@@ -5,7 +5,7 @@ date: "2024-12-26"
 ---
 ### install fastq-dl with conda
 
-we will use fastq-dl to download the fastq files from GEO.
+We will use fastq-dl to download the fastq files from GEO.
 
 https://github.com/rpetit3/fastq-dl/tree/master
 

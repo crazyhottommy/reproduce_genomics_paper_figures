@@ -46,7 +46,6 @@ Here is a list of the tools can be used.
 
 I am going to use [`EnrichedHeatmap`](https://www.bioconductor.org/packages/release/bioc/html/EnrichedHeatmap.html) which is built upon the awesome [`ComplexHeatmap`](https://bioconductor.org/packages/release/bioc/html/ComplexHeatmap.html).
 
-
 ```{r}
 library(rtracklayer) # for reading in bed file
 library(here)

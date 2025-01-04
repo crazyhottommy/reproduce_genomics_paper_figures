@@ -11,4 +11,4 @@ Let's try to reproduce Figure 1 from this paper https://pmc.ncbi.nlm.nih.gov/art
 
 ![](imgs/emss-79986-f001.jpg)
 
-GEO dataset https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE66083
+The GEO dataset https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE66083

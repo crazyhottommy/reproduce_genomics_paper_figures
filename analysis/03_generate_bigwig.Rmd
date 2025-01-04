@@ -27,7 +27,6 @@ We will use [bamCoverage](https://deeptools.readthedocs.io/en/develop/content/to
 conda install -c conda-forge -c bioconda deeptools
 # or 
 pip install deeptools
-
 ```
 
 I really like the demonstration of how coverage files are computed by the deeptools [authors](https://docs.google.com/file/d/0B8DPnFM4SLr2UjdYNkQ0dElEMm8/edit?resourcekey=0-7YZ1j0PIefw22P18GFlUjg).

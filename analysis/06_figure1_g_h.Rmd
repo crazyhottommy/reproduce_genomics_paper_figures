@@ -63,7 +63,6 @@ Read this [classic ChIP-seq paper](https://www.cell.com/cell/fulltext/S0092-8674
 To do this, I will download the H3K4me1, H3K4me3 and H3K27ac peaks from https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE49651.
 
 ![](imgs/GEO.png)
-
 click the `ftp` or `http` in the link above, and you will download the `peaks.txt.gz` files.
 
 Note, the data were aligned to hg19 human genome. We did our alignment using hg38 genome.

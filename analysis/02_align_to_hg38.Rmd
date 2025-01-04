@@ -9,7 +9,7 @@ human genome for the alignment.
 
 ### Where to download the reference?
 
-watch my youtube video on this topic:
+watch my YouTube video on this topic:
 
 ```{r echo=FALSE}
 library("vembedr")

@@ -31,7 +31,6 @@ From the figure description:
 
 >(d) Linear correlation between the signal of YAP or TAZ and TEAD4 peaks in the 5522 shared binding sites. r2 is the coefficients of determination of the two correlations.
 
-
 Read in the peak files:
 
 ```{r}
