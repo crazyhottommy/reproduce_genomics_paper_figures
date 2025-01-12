@@ -99,7 +99,7 @@ Now let's change the name of the fastq files so we know what are they.
 Note this is not the best practice, but for our tutorial, let's do it.
 
 ```{bash eval=FALSE}
-mv SRR1810907.fastq.gz TAZ.fatq.gz
+mv SRR1810907.fastq.gz TAZ.fastq.gz
 mv SRR1810900.fastq.gz YAP.fastq.gz
 mv SRR1810918.fastq.gz TEAD4.fastq.gz
 mv SRR1810912.fastq.gz IgG.fastq.gz
