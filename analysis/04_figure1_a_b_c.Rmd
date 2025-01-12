@@ -134,7 +134,7 @@ TEAD4_peak<- import(here("data/fastq/TEAD4_peak/TEAD4_peaks.narrowPeak"))
 YAP_overlap_TAZ_peaks_overlap_TEAD4<- subsetByOverlaps(YAP_overlap_TAZ_peaks, TEAD4_peak)
 
 n_YAP_TAZ <- length(YAP_overlap_TAZ_peaks)  # Total peaks 
-n_TEAD4 <- length(TAZ_peaks)  # Total peaks 
+n_TEAD4 <- length(TEAD4_peak)  # Total peaks 
 n_overlap2<- length(YAP_overlap_TAZ_peaks_overlap_TEAD4)
 
 venn_data2 <- Venn(SetNames = c("YAP/TAZ", "TEAD4"),
